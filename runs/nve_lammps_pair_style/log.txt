@@ -2,13 +2,11 @@
 ############ INITIALIZATION PARAMETERS ############
 include ${script_path}/init.lmp
 include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/scripts/init.lmp
-variable dt equal 0.001
 variable num_atom_types      equal 2
 variable initial_num_atoms   equal 501
 variable initial_density     equal 1.655
 variable initial_temperature equal 0.28
 variable initial_pressure    equal 2.37*10^(-6)
-
 variable dt equal 0.001
 
 ############ CREATE CUBIC SIMULATION BOX ############
@@ -106,6 +104,11 @@ Created 336 atoms
 ############ RUN SIMULATION ############
 include ${script_path}/simulation.lmp
 include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/scripts/simulation.lmp
+variable data_path string ${data_root_path}/N_${initial_num_atoms}
+variable data_path string /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/N_${initial_num_atoms}
+variable data_path string /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/N_501
+shell mkdir ${data_path}
+shell mkdir /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/N_501
 include ${script_path}/compute.lmp
 include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/scripts/compute.lmp
 variable global_exp_stride               equal 100
@@ -211,7 +214,7 @@ fix dump_temperature all ave/time ${temperature_exp_avg_stride} ${temperature_ex
 fix dump_temperature all ave/time 1 ${temperature_exp_avg_num} ${temperature_exp_stride}         c_calc_temperature file ${data_path}/temperature.dat
 fix dump_temperature all ave/time 1 1 ${temperature_exp_stride}         c_calc_temperature file ${data_path}/temperature.dat
 fix dump_temperature all ave/time 1 1 100         c_calc_temperature file ${data_path}/temperature.dat
-fix dump_temperature all ave/time 1 1 100         c_calc_temperature file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/temperature.dat
+fix dump_temperature all ave/time 1 1 100         c_calc_temperature file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/N_501/temperature.dat
 
 if "${pressure_calcp} == 1 && ${temperature_calcp} == 1" then    "compute calc_pressure all pressure calc_temperature virial"
 compute calc_pressure all pressure calc_temperature virial
@@ -221,7 +224,7 @@ fix dump_pressure all ave/time ${pressure_exp_avg_stride} ${pressure_exp_avg_num
 fix dump_pressure all ave/time 1 ${pressure_exp_avg_num} ${pressure_exp_stride}         c_calc_pressure file ${data_path}/pressure.dat
 fix dump_pressure all ave/time 1 1 ${pressure_exp_stride}         c_calc_pressure file ${data_path}/pressure.dat
 fix dump_pressure all ave/time 1 1 100         c_calc_pressure file ${data_path}/pressure.dat
-fix dump_pressure all ave/time 1 1 100         c_calc_pressure file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/pressure.dat
+fix dump_pressure all ave/time 1 1 100         c_calc_pressure file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/N_501/pressure.dat
 
 if "${energy_calcp} == 1" then    "compute calc_ke all ke"    "compute calc_pe all pe"    "fix dump_ke all ave/time ${energy_exp_avg_stride} ${energy_exp_avg_num} ${energy_exp_stride}         c_calc_ke c_calc_pe file ${data_path}/energy.dat"
 compute calc_ke all ke
@@ -230,14 +233,14 @@ fix dump_ke all ave/time ${energy_exp_avg_stride} ${energy_exp_avg_num} ${energy
 fix dump_ke all ave/time 1 ${energy_exp_avg_num} ${energy_exp_stride}         c_calc_ke c_calc_pe file ${data_path}/energy.dat
 fix dump_ke all ave/time 1 1 ${energy_exp_stride}         c_calc_ke c_calc_pe file ${data_path}/energy.dat
 fix dump_ke all ave/time 1 1 100         c_calc_ke c_calc_pe file ${data_path}/energy.dat
-fix dump_ke all ave/time 1 1 100         c_calc_ke c_calc_pe file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/energy.dat
+fix dump_ke all ave/time 1 1 100         c_calc_ke c_calc_pe file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/N_501/energy.dat
 if "${momentum_calcp} == 1" then    "compute calc_momentum all momentum"    "fix dump_momentum all ave/time ${momentum_exp_avg_stride} ${momentum_exp_avg_num} ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat"
 compute calc_momentum all momentum
 fix dump_momentum all ave/time ${momentum_exp_avg_stride} ${momentum_exp_avg_num} ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat
 fix dump_momentum all ave/time 1 ${momentum_exp_avg_num} ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat
 fix dump_momentum all ave/time 1 1 ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat
 fix dump_momentum all ave/time 1 1 100         c_calc_momentum[*] file ${data_path}/momentum.dat
-fix dump_momentum all ave/time 1 1 100         c_calc_momentum[*] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/momentum.dat
+fix dump_momentum all ave/time 1 1 100         c_calc_momentum[*] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/N_501/momentum.dat
 
 if "${velocity_dist_calcp} == 1" then    "compute calc_vel all property/atom vx vy vz"    "fix aveg_velocity_dist all ave/atom ${velocity_dist_exp_avg_stride} ${velocity_dist_exp_avg_num} ${velocity_dist_exp_stride}         c_calc_vel[1] c_calc_vel[2] c_calc_vel[3]"    "dump dump_velocity_dist all custom ${velocity_dist_exp_stride} ${data_path}/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]"
 compute calc_vel all property/atom vx vy vz
@@ -247,7 +250,7 @@ fix aveg_velocity_dist all ave/atom 1 1 ${velocity_dist_exp_stride}         c_ca
 fix aveg_velocity_dist all ave/atom 1 1 100000         c_calc_vel[1] c_calc_vel[2] c_calc_vel[3]
 dump dump_velocity_dist all custom ${velocity_dist_exp_stride} ${data_path}/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]
 dump dump_velocity_dist all custom 100000 ${data_path}/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]
-dump dump_velocity_dist all custom 100000 /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]
+dump dump_velocity_dist all custom 100000 /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/data/N_501/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]
 
 if "${angular_momentum_calcp} == 1" then    "compute calc_angular_momentum all angmom/chunk type_chunk"    "fix dump_angular_momentum all ave/time ${angular_momentum_exp_avg_stride} ${angular_momentum_exp_avg_num} ${angular_momentum_exp_stride}         c_calc_angular_momentum[*] file ${data_path}/angular_momentum.dat mode vector"
 
@@ -323,9 +326,9 @@ Per MPI rank memory allocation (min/avg/max) = 4.705 | 4.708 | 4.711 Mbytes
         50   0.2796467     -4.6014121      0.41863279    -4.1827793      2.1497402    
         60   0.2796467     -4.8333665      0.41863279    -4.4147337      1.9527221    
         66   0.2796467     -4.9070322      0.41863279    -4.4883994      2.0553308    
-Loop time of 0.0578205 on 8 procs for 66 steps with 501 atoms
+Loop time of 0.0616131 on 8 procs for 66 steps with 501 atoms
 
-86.7% CPU use with 8 MPI tasks x no OpenMP threads
+94.2% CPU use with 8 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = energy tolerance
@@ -339,12 +342,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.013689   | 0.0176     | 0.021735   |   2.2 | 30.44
-Neigh   | 0.011612   | 0.013391   | 0.014963   |   1.0 | 23.16
-Comm    | 0.016675   | 0.02251    | 0.028127   |   2.6 | 38.93
-Output  | 0.00012754 | 0.0001476  | 0.0001987  |   0.0 |  0.26
+Pair    | 0.013857   | 0.018034   | 0.0242     |   2.5 | 29.27
+Neigh   | 0.01166    | 0.013721   | 0.015905   |   1.1 | 22.27
+Comm    | 0.017176   | 0.025322   | 0.031315   |   2.8 | 41.10
+Output  | 0.00013014 | 0.00014445 | 0.0001736  |   0.0 |  0.23
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.004172   |            |       |  7.22
+Other   |            | 0.004392   |            |       |  7.13
 
 Nlocal:         62.625 ave          72 max          50 min
 Histogram: 1 0 0 1 1 1 1 1 1 1
@@ -469,20 +472,20 @@ Per MPI rank memory allocation (min/avg/max) = 4.833 | 4.836 | 4.838 Mbytes
      99000   0.52089979    -5.2682026      0.77979011    -4.4884125      1.7715399    
     100000   0.5034209     -5.2420382      0.75362411    -4.4884141      2.3247803    
     100066   0.52737668    -5.2779057      0.78948604    -4.4884196      1.0624766    
-Loop time of 18.6223 on 8 procs for 100000 steps with 501 atoms
+Loop time of 18.9996 on 8 procs for 100000 steps with 501 atoms
 
-Performance: 463960.020 tau/day, 5369.908 timesteps/s, 2.690 Matom-step/s
-83.8% CPU use with 8 MPI tasks x no OpenMP threads
+Performance: 454745.804 tau/day, 5263.262 timesteps/s, 2.637 Matom-step/s
+84.0% CPU use with 8 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 7.111      | 7.2368     | 7.4255     |   4.1 | 38.86
-Neigh   | 1.121      | 1.1492     | 1.1728     |   1.4 |  6.17
-Comm    | 8.9084     | 9.0775     | 9.2524     |   4.0 | 48.75
-Output  | 0.0024189  | 0.0026084  | 0.0029508  |   0.3 |  0.01
-Modify  | 0.10251    | 0.10738    | 0.11029    |   0.8 |  0.58
-Other   |            | 1.049      |            |       |  5.63
+Pair    | 7.083      | 7.312      | 7.5398     |   5.0 | 38.49
+Neigh   | 1.1262     | 1.1593     | 1.1814     |   1.5 |  6.10
+Comm    | 9.1851     | 9.3965     | 9.646      |   4.6 | 49.46
+Output  | 0.0025963  | 0.0027707  | 0.0032045  |   0.3 |  0.01
+Modify  | 0.11082    | 0.11433    | 0.11657    |   0.6 |  0.60
+Other   |            | 1.015      |            |       |  5.34
 
 Nlocal:         62.625 ave          71 max          57 min
 Histogram: 1 0 2 2 1 1 0 0 0 1
@@ -504,20 +507,20 @@ Per MPI rank memory allocation (min/avg/max) = 5.209 | 5.211 | 5.213 Mbytes
    Step          Temp          PotEng         KinEng         TotEng         Press     
     100066   0.52737668    -5.2779057      0.78948604    -4.4884196      1.0624766    
     100067   0.52656094    -5.276683       0.78826489    -4.4884181      1.0806028    
-Loop time of 0.00045623 on 8 procs for 1 steps with 501 atoms
+Loop time of 0.000461469 on 8 procs for 1 steps with 501 atoms
 
-Performance: 189378.009 tau/day, 2191.875 timesteps/s, 1.098 Matom-step/s
-100.2% CPU use with 8 MPI tasks x no OpenMP threads
+Performance: 187227.975 tau/day, 2166.990 timesteps/s, 1.086 Matom-step/s
+49.3% CPU use with 8 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.00012217 | 0.0001349  | 0.00015001 |   0.0 | 29.57
+Pair    | 0.00012198 | 0.00013382 | 0.00014985 |   0.0 | 29.00
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 8.5792e-05 | 0.00010077 | 0.0001126  |   0.0 | 22.09
-Output  | 0.00013352 | 0.00016963 | 0.00020181 |   0.0 | 37.18
-Modify  | 1.132e-06  | 1.8239e-06 | 2.676e-06  |   0.0 |  0.40
-Other   |            | 4.91e-05   |            |       | 10.76
+Comm    | 9.8637e-05 | 0.00011568 | 0.00012706 |   0.0 | 25.07
+Output  | 0.00014361 | 0.00017112 | 0.00019478 |   0.0 | 37.08
+Modify  | 1.283e-06  | 1.9302e-06 | 2.374e-06  |   0.0 |  0.42
+Other   |            | 3.891e-05  |            |       |  8.43
 
 Nlocal:         62.625 ave          72 max          57 min
 Histogram: 2 1 1 1 0 1 1 0 0 1
@@ -531,4 +534,4 @@ Ave neighs/atom = 320.79641
 Neighbor list builds = 0
 Dangerous builds = 0
 unfix run_nve_1
-Total wall time: 0:00:18
+Total wall time: 0:00:19

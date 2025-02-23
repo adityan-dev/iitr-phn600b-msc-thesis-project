@@ -1,3 +1,5 @@
+variable data_path string ${data_root_path}/N_${initial_num_atoms}
+shell mkdir ${data_path}
 include ${script_path}/compute.lmp
 
 velocity all create ${initial_temperature} 12345 dist gaussian

@@ -1,4 +1,4 @@
 LAMMPS (19 Nov 2024 - Development - )
 ############ CREATE LOG FILE ############
 log ${simulation_path}/log.txt
-log /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/log.txt
+log /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nve_lammps_pair_style/log.txt

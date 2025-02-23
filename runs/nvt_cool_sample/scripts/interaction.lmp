@@ -1,0 +1,5 @@
+variable ntw_gamma equal 2.2
+variable cut equal 12.0/2.84
+
+############ INITIALIZE INTERACTIONS ############
+include ${global_data_path}/ntw_pair_style/ntw.lmp

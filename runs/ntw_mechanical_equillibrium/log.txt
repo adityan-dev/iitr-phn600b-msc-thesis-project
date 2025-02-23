@@ -1,0 +1,199 @@
+
+############ INITIALIZATION PARAMETERS ############
+include ${script_path}/init.lmp
+include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/ntw_mechanical_equillibrium/scripts/init.lmp
+variable dt equal 0.001
+variable num_atom_types      equal 2
+variable initial_num_atoms   equal 1200
+variable initial_density     equal 1.655
+variable initial_temperature equal 0.28
+variable initial_pressure    equal 2.37*10^(-6)
+
+variable dt equal 0.001
+
+############ CREATE CUBIC SIMULATION BOX ############
+variable box       equal (${initial_num_atoms}/${initial_density})^(1.0/3.0)
+variable box       equal (1200/${initial_density})^(1.0/3.0)
+variable box       equal (1200/1.655)^(1.0/3.0)
+variable box_end   equal 0.5*${box}
+variable box_end   equal 0.5*8.98382084477085
+variable box_start equal -0.5*${box}
+variable box_start equal -0.5*8.98382084477085
+
+region          simulation_box block ${box_start} ${box_end} ${box_start} ${box_end} ${box_start} ${box_end}
+region          simulation_box block -4.49191042238543 ${box_end} ${box_start} ${box_end} ${box_start} ${box_end}
+region          simulation_box block -4.49191042238543 4.49191042238543 ${box_start} ${box_end} ${box_start} ${box_end}
+region          simulation_box block -4.49191042238543 4.49191042238543 -4.49191042238543 ${box_end} ${box_start} ${box_end}
+region          simulation_box block -4.49191042238543 4.49191042238543 -4.49191042238543 4.49191042238543 ${box_start} ${box_end}
+region          simulation_box block -4.49191042238543 4.49191042238543 -4.49191042238543 4.49191042238543 -4.49191042238543 ${box_end}
+region          simulation_box block -4.49191042238543 4.49191042238543 -4.49191042238543 4.49191042238543 -4.49191042238543 4.49191042238543
+create_box      ${num_atom_types} simulation_box
+create_box      2 simulation_box
+Created orthogonal box = (-4.4919104 -4.4919104 -4.4919104) to (4.4919104 4.4919104 4.4919104)
+  2 by 2 by 2 MPI processor grid
+
+############ PRINT INITIAL CONFIGURATION ############
+print "Initial Num Atoms = ${initial_num_atoms}"
+Initial Num Atoms = 1200
+print "Initial Density = ${initial_density}"
+Initial Density = 1.655
+print "Initial Pressure = ${initial_pressure}"
+Initial Pressure = 2.37e-06
+print "Initial Temperature = ${initial_temperature}"
+Initial Temperature = 0.28
+print "Initial Cubic Box Length = ${box}"
+Initial Cubic Box Length = 8.98382084477085
+
+############ INITIALIZE INTERACTIONS ############
+include ${script_path}/interaction.lmp
+include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/ntw_mechanical_equillibrium/scripts/interaction.lmp
+variable ntw_gamma equal 2.2
+variable cut equal 12.0/2.84
+
+############ INITIALIZE INTERACTIONS ############
+include ${global_data_path}/ntw_pair_style/ntw.lmp
+include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../data/ntw_pair_style/ntw.lmp
+labelmap atom 1 Si
+labelmap atom 2 O
+
+variable mass_Si equal 1.00
+variable mass_O equal 0.57
+
+mass Si 1.00
+mass O  0.57
+
+pair_style ntw ${ntw_gamma} ${cut}
+pair_style ntw 2.2 ${cut}
+pair_style ntw 2.2 4.22535211267606
+
+variable eps11 equal 1.0
+variable eps12 equal 6.0
+variable eps22 equal 1.0
+
+variable sig11 equal 1.00
+variable sig12 equal 0.49
+variable sig22 equal 0.85
+
+#variable rc11 equal ${ntw_gamma}*${sig11}
+#variable rc12 equal ${ntw_gamma}*${sig12}
+#variable rc22 equal ${ntw_gamma}*${sig22}
+
+pair_coeff Si Si 1.0 1.00
+pair_coeff Si O  6.0 0.49
+pair_coeff O  O  1.0 0.85
+
+variable frac_Si equal 0.33
+variable frac_O  equal 0.67
+
+variable n_Si equal round(${frac_Si}*${initial_num_atoms})
+variable n_Si equal round(0.33*${initial_num_atoms})
+variable n_Si equal round(0.33*1200)
+variable n_O  equal round(${frac_O}*${initial_num_atoms})
+variable n_O  equal round(0.67*${initial_num_atoms})
+variable n_O  equal round(0.67*1200)
+
+create_atoms 1 random ${n_Si} 341341 simulation_box
+create_atoms 1 random 396 341341 simulation_box
+Created 396 atoms
+  using lattice units in orthogonal box = (-4.4919104 -4.4919104 -4.4919104) to (4.4919104 4.4919104 4.4919104)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 random ${n_O}  127569 simulation_box
+create_atoms 2 random 804  127569 simulation_box
+Created 804 atoms
+  using lattice units in orthogonal box = (-4.4919104 -4.4919104 -4.4919104) to (4.4919104 4.4919104 4.4919104)
+  create_atoms CPU = 0.000 seconds
+
+############ RUN SIMULATION ############
+include ${script_path}/simulation.lmp
+include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/ntw_mechanical_equillibrium/scripts/simulation.lmp
+velocity all create ${initial_temperature} 12345 dist gaussian
+velocity all create 0.28 12345 dist gaussian
+velocity all zero linear
+velocity all zero angular
+
+thermo_style custom step temp pe ke etotal press
+
+dump save all atom 1 ${global_data_path}/initial_states/${initial_num_atoms}.dat
+dump save all atom 1 /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../data/initial_states/${initial_num_atoms}.dat
+dump save all atom 1 /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../data/initial_states/1200.dat
+
+### STAGE 0 ###
+thermo 10
+minimize 1.0e-4 1.0e-6 1000 10000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- Type Label Framework: https://doi.org/10.1021/acs.jpcb.3c08419
+
+@Article{Gissinger24,
+ author = {Jacob R. Gissinger, Ilia Nikiforov, Yaser Afshar, Brendon Waters, Moon-ki Choi, Daniel S. Karls, Alexander Stukowski, Wonpil Im, Hendrik Heinz, Axel Kohlmeyer, and Ellad B. Tadmor},
+ title = {Type Label Framework for Bonded Force Fields in LAMMPS},
+ journal = {J. Phys. Chem. B},
+ year =    2024,
+ volume =  128,
+ number =  13,
+ pages =   {3282--3297}
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 4.5253521
+  ghost atom cutoff = 4.5253521
+  binsize = 2.2626761, bins = 4 4 4
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair ntw, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 4.283 | 4.289 | 4.296 Mbytes
+   Step          Temp          PotEng         KinEng         TotEng         Press     
+         0   0.27996087     7.3702526e+09  0.41959135     7.3702526e+09  4.8791074e+10
+        10   0.27996087     16219.553      0.41959135     16219.973      107605.83    
+        20   0.27996087     57.828142      0.41959135     58.247734      420.54227    
+        30   0.27996087     0.53521833     0.41959135     0.95480968     25.168143    
+        40   0.27996087    -3.1950015      0.41959135    -2.7754101      5.4053564    
+        50   0.27996087    -4.1246284      0.41959135    -3.7050371      2.8001471    
+        53   0.27996087    -4.2018204      0.41959135    -3.7822291      3.5409107    
+Loop time of 0.106732 on 8 procs for 53 steps with 1200 atoms
+
+96.7% CPU use with 8 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = energy tolerance
+  Energy initial, next-to-last, final = 
+      7370252572.69025  -4.20146249239024  -4.20182041017446
+  Force two-norm initial, final = 1.7387562e+15 888.8767
+  Force max component initial, final = 1.123678e+15 209.96736
+  Final line search alpha, max atom move = 5.0226113e-05 0.010545844
+  Iterations, force evaluations = 53 134
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.031475   | 0.039662   | 0.047403   |   2.7 | 37.16
+Neigh   | 0.022153   | 0.026205   | 0.029033   |   1.2 | 24.55
+Comm    | 0.016392   | 0.025658   | 0.037572   |   4.3 | 24.04
+Output  | 0.0071667  | 0.008867   | 0.010544   |   1.2 |  8.31
+Modify  | 0          | 0          | 0          |   0.0 |  0.00
+Other   |            | 0.00634    |            |       |  5.94
+
+Nlocal:            150 ave         169 max         126 min
+Histogram: 1 0 0 1 1 1 1 2 0 1
+Nghost:        3956.25 ave        4127 max        3773 min
+Histogram: 1 1 0 0 1 3 0 0 1 1
+Neighs:          48183 ave       56811 max       38351 min
+Histogram: 1 1 1 0 1 0 1 0 1 2
+
+Total # of neighbors = 385464
+Ave neighs/atom = 321.22
+Neighbor list builds = 20
+Dangerous builds = 0
+
+Total wall time: 0:00:00

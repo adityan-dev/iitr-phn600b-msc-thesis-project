@@ -1,0 +1,20 @@
+include ${script_path}/compute.lmp
+
+velocity all create ${initial_temperature} 12345 dist gaussian
+velocity all zero linear
+velocity all zero angular
+
+thermo_style custom step temp pe ke etotal press
+
+### STAGE 0 ###
+thermo 10
+minimize 1.0e-4 1.0e-6 1000 10000
+
+### STAGE 1 ###
+thermo 1000
+fix run_nve_1 all nve
+timestep ${dt}
+run 100000
+dump save all custom 1 ${global_data_path}/initial_states/nve_${initial_num_atoms}.dat id type x y z vx vy vz
+run 1
+unfix run_nve_1

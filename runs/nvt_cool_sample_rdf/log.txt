@@ -1,0 +1,401 @@
+
+############ INITIALIZATION PARAMETERS ############
+include ${script_path}/init.lmp
+include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/scripts/init.lmp
+variable dt equal 0.0005
+variable num_atom_types      equal 2
+variable initial_num_atoms   equal 501
+variable initial_density     equal 1.655
+variable initial_temperature equal 0.28
+variable final_temperature   equal 0.28
+variable initial_pressure    equal 2.37*10^(-6)
+
+
+############ CREATE CUBIC SIMULATION BOX ############
+variable box       equal (${initial_num_atoms}/${initial_density})^(1.0/3.0)
+variable box       equal (501/${initial_density})^(1.0/3.0)
+variable box       equal (501/1.655)^(1.0/3.0)
+variable box_end   equal 0.5*${box}
+variable box_end   equal 0.5*6.71449326567
+variable box_start equal -0.5*${box}
+variable box_start equal -0.5*6.71449326567
+
+region          simulation_box block ${box_start} ${box_end} ${box_start} ${box_end} ${box_start} ${box_end}
+region          simulation_box block -3.357246632835 ${box_end} ${box_start} ${box_end} ${box_start} ${box_end}
+region          simulation_box block -3.357246632835 3.357246632835 ${box_start} ${box_end} ${box_start} ${box_end}
+region          simulation_box block -3.357246632835 3.357246632835 -3.357246632835 ${box_end} ${box_start} ${box_end}
+region          simulation_box block -3.357246632835 3.357246632835 -3.357246632835 3.357246632835 ${box_start} ${box_end}
+region          simulation_box block -3.357246632835 3.357246632835 -3.357246632835 3.357246632835 -3.357246632835 ${box_end}
+region          simulation_box block -3.357246632835 3.357246632835 -3.357246632835 3.357246632835 -3.357246632835 3.357246632835
+create_box      ${num_atom_types} simulation_box
+create_box      2 simulation_box
+Created orthogonal box = (-3.3572466 -3.3572466 -3.3572466) to (3.3572466 3.3572466 3.3572466)
+  2 by 2 by 2 MPI processor grid
+
+############ PRINT INITIAL CONFIGURATION ############
+print "Initial Num Atoms = ${initial_num_atoms}"
+Initial Num Atoms = 501
+print "Initial Density = ${initial_density}"
+Initial Density = 1.655
+print "Initial Pressure = ${initial_pressure}"
+Initial Pressure = 2.37e-06
+print "Initial Temperature = ${initial_temperature}"
+Initial Temperature = 0.28
+print "Initial Cubic Box Length = ${box}"
+Initial Cubic Box Length = 6.71449326567
+
+############ INITIALIZE INTERACTIONS ############
+include ${script_path}/interaction.lmp
+include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/scripts/interaction.lmp
+variable ntw_gamma equal 2.2
+variable cut equal 12.0/2.84
+
+############ INITIALIZE INTERACTIONS ############
+include ${global_data_path}/ntw_pair_style/ntw.lmp
+include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../data/ntw_pair_style/ntw.lmp
+labelmap atom 1 Si
+labelmap atom 2 O
+
+variable mass_Si equal 1.00
+variable mass_O equal 0.57
+
+mass Si 1.00
+mass O  0.57
+
+pair_style ntw ${ntw_gamma} ${cut}
+pair_style ntw 2.2 ${cut}
+pair_style ntw 2.2 4.22535211267606
+
+variable eps11 equal 1.0
+variable eps12 equal 6.0
+variable eps22 equal 1.0
+
+variable sig11 equal 1.00
+variable sig12 equal 0.49
+variable sig22 equal 0.85
+
+#variable rc11 equal ${ntw_gamma}*${sig11}
+#variable rc12 equal ${ntw_gamma}*${sig12}
+#variable rc22 equal ${ntw_gamma}*${sig22}
+
+pair_coeff Si Si 1.0 1.00
+pair_coeff Si O  6.0 0.49
+pair_coeff O  O  1.0 0.85
+
+variable frac_Si equal 0.33
+variable frac_O  equal 0.67
+
+variable n_Si equal round(${frac_Si}*${initial_num_atoms})
+variable n_Si equal round(0.33*${initial_num_atoms})
+variable n_Si equal round(0.33*501)
+variable n_O  equal round(${frac_O}*${initial_num_atoms})
+variable n_O  equal round(0.67*${initial_num_atoms})
+variable n_O  equal round(0.67*501)
+
+create_atoms 1 random ${n_Si} 341341 simulation_box
+create_atoms 1 random 165 341341 simulation_box
+Created 165 atoms
+  using lattice units in orthogonal box = (-3.3572466 -3.3572466 -3.3572466) to (3.3572466 3.3572466 3.3572466)
+  create_atoms CPU = 0.000 seconds
+create_atoms 2 random ${n_O}  127569 simulation_box
+create_atoms 2 random 336  127569 simulation_box
+Created 336 atoms
+  using lattice units in orthogonal box = (-3.3572466 -3.3572466 -3.3572466) to (3.3572466 3.3572466 3.3572466)
+  create_atoms CPU = 0.000 seconds
+
+############ RUN SIMULATION ############
+include ${script_path}/simulation.lmp
+include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/scripts/simulation.lmp
+read_dump ${global_data_path}/initial_states/quench_0.28_${initial_num_atoms}.dat 0 x y z vx vy vz
+read_dump /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../data/initial_states/quench_0.28_${initial_num_atoms}.dat 0 x y z vx vy vz
+read_dump /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../data/initial_states/quench_0.28_501.dat 0 x y z vx vy vz
+Scanning dump file ...
+Reading snapshot from dump file ...
+  orthogonal box = (-3.3572466 -3.3572466 -3.3572466) to (3.3572466 3.3572466 3.3572466)
+  501 atoms before read
+  501 atoms in snapshot
+  0 atoms purged
+  501 atoms replaced
+  0 atoms trimmed
+  0 atoms added
+  501 atoms after read
+include ${script_path}/compute.lmp
+include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/scripts/compute.lmp
+variable global_exp_stride               equal 100
+variable global_exp_avg_stride           equal 1
+variable global_exp_avg_num              equal 1
+
+variable xvfp_calcp                      equal 0
+variable xvfp_exp_stride                 equal 10000 #${global_exp_stride}
+
+variable temperature_calcp               equal 1
+variable temperature_exp_stride          equal ${global_exp_stride}
+variable temperature_exp_stride          equal 100
+variable temperature_exp_avg_stride      equal ${global_exp_avg_stride}
+variable temperature_exp_avg_stride      equal 1
+variable temperature_exp_avg_num         equal ${global_exp_avg_num}
+variable temperature_exp_avg_num         equal 1
+
+variable pressure_calcp                  equal 1
+variable pressure_exp_stride             equal ${global_exp_stride}
+variable pressure_exp_stride             equal 100
+variable pressure_exp_avg_stride         equal ${global_exp_avg_stride}
+variable pressure_exp_avg_stride         equal 1
+variable pressure_exp_avg_num            equal ${global_exp_avg_num}
+variable pressure_exp_avg_num            equal 1
+
+variable momentum_calcp                  equal 1
+variable momentum_exp_stride             equal ${global_exp_stride}
+variable momentum_exp_stride             equal 100
+variable momentum_exp_avg_stride         equal ${global_exp_avg_stride}
+variable momentum_exp_avg_stride         equal 1
+variable momentum_exp_avg_num            equal ${global_exp_avg_num}
+variable momentum_exp_avg_num            equal 1
+
+variable angular_momentum_calcp          equal 0
+variable angular_momentum_exp_stride     equal ${global_exp_stride}
+variable angular_momentum_exp_stride     equal 100
+variable angular_momentum_exp_avg_stride equal ${global_exp_avg_stride}
+variable angular_momentum_exp_avg_stride equal 1
+variable angular_momentum_exp_avg_num    equal ${global_exp_avg_num}
+variable angular_momentum_exp_avg_num    equal 1
+
+variable energy_calcp                    equal 1
+variable energy_exp_stride               equal ${global_exp_stride}
+variable energy_exp_stride               equal 100
+variable energy_exp_avg_stride           equal ${global_exp_avg_stride}
+variable energy_exp_avg_stride           equal 1
+variable energy_exp_avg_num              equal ${global_exp_avg_num}
+variable energy_exp_avg_num              equal 1
+
+variable velocity_dist_calcp              equal 1
+variable velocity_dist_exp_stride         equal 10000# 420000 #${global_exp_stride}
+variable velocity_dist_exp_avg_stride     equal 1 #${global_exp_avg_stride}
+variable velocity_dist_exp_avg_num        equal 1  #${global_exp_avg_num}
+
+variable rdf_calcp              equal 1
+variable rdf_exp_stride         equal 20000 # 420000
+variable rdf_exp_avg_stride     equal 1
+variable rdf_exp_avg_num        equal 20000
+variable rdf_bins               equal 1000
+variable rdf_cutoff_11          equal ${cut}
+variable rdf_cutoff_11          equal 4.22535211267606
+variable rdf_cutoff_12          equal ${cut}
+variable rdf_cutoff_12          equal 4.22535211267606
+variable rdf_cutoff_22          equal ${cut}
+variable rdf_cutoff_22          equal 4.22535211267606
+
+variable adf_calcp              equal 0
+variable adf_exp_stride         equal 10000
+variable adf_exp_avg_stride     equal 1
+variable adf_exp_avg_num        equal 1
+variable adf_bins               equal 500
+variable adf_inner_cutoff_111   equal 0.0
+variable adf_inner_cutoff_121   equal 0.0
+variable adf_inner_cutoff_212   equal 0.0
+variable adf_inner_cutoff_222   equal 0.0
+variable adf_outer_cutoff_111   equal 3 #${cut}
+variable adf_outer_cutoff_121   equal 3 #${cut}
+variable adf_outer_cutoff_212   equal 3 #${cut}
+variable adf_outer_cutoff_222   equal 3 #${cut}
+
+###################################################
+############ DO NOT MODIFY ########################
+###################################################
+variable data_path string ${data_root_path}
+variable data_path string /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data
+compute type_chunk all chunk/atom type
+
+if "${rdf_calcp} == 1"  then    "compute calc_rdf_all all rdf ${rdf_bins}"    "compute calc_rdf_11 all rdf ${rdf_bins} 1 1"    "compute calc_rdf_12 all rdf ${rdf_bins} 1 2"    "compute calc_rdf_22 all rdf ${rdf_bins} 2 2"    "fix dump_rdf_all all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector"    "fix dump_rdf_11 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector"    "fix dump_rdf_12 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector"    "fix dump_rdf_22 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector"
+compute calc_rdf_all all rdf ${rdf_bins}
+compute calc_rdf_all all rdf 1000
+compute calc_rdf_11 all rdf ${rdf_bins} 1 1
+compute calc_rdf_11 all rdf 1000 1 1
+compute calc_rdf_12 all rdf ${rdf_bins} 1 2
+compute calc_rdf_12 all rdf 1000 1 2
+compute calc_rdf_22 all rdf ${rdf_bins} 2 2
+compute calc_rdf_22 all rdf 1000 2 2
+fix dump_rdf_all all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector
+fix dump_rdf_all all ave/time 1 ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector
+fix dump_rdf_all all ave/time 1 20000 ${rdf_exp_stride}         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector
+fix dump_rdf_all all ave/time 1 20000 20000         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector
+fix dump_rdf_all all ave/time 1 20000 20000         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/rdf_all.dat mode vector
+fix dump_rdf_11 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector
+fix dump_rdf_11 all ave/time 1 ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector
+fix dump_rdf_11 all ave/time 1 20000 ${rdf_exp_stride}         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector
+fix dump_rdf_11 all ave/time 1 20000 20000         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector
+fix dump_rdf_11 all ave/time 1 20000 20000         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/rdf_11.dat mode vector
+fix dump_rdf_12 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector
+fix dump_rdf_12 all ave/time 1 ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector
+fix dump_rdf_12 all ave/time 1 20000 ${rdf_exp_stride}         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector
+fix dump_rdf_12 all ave/time 1 20000 20000         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector
+fix dump_rdf_12 all ave/time 1 20000 20000         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/rdf_12.dat mode vector
+fix dump_rdf_22 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector
+fix dump_rdf_22 all ave/time 1 ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector
+fix dump_rdf_22 all ave/time 1 20000 ${rdf_exp_stride}         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector
+fix dump_rdf_22 all ave/time 1 20000 20000         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector
+fix dump_rdf_22 all ave/time 1 20000 20000         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/rdf_22.dat mode vector
+
+if "${adf_calcp} == 1" then    "compute calc_adf_all all adf ${adf_bins}"    "compute calc_adf_111 all adf ${adf_bins} 1 1 1  ${adf_inner_cutoff_111} ${adf_outer_cutoff_111} ${adf_inner_cutoff_111} ${adf_outer_cutoff_111} ordinate degree"    "compute calc_adf_121 all adf ${adf_bins} 2 1 1  ${adf_inner_cutoff_121} ${adf_outer_cutoff_121} ${adf_inner_cutoff_121} ${adf_outer_cutoff_121} ordinate degree"    "compute calc_adf_212 all adf ${adf_bins} 1 2 2  ${adf_inner_cutoff_212} ${adf_outer_cutoff_212} ${adf_inner_cutoff_212} ${adf_outer_cutoff_212} ordinate degree"    "compute calc_adf_222 all adf ${adf_bins} 2 2 2  ${adf_inner_cutoff_222} ${adf_outer_cutoff_222} ${adf_inner_cutoff_222} ${adf_outer_cutoff_222} ordinate degree"    "fix dump_adf_all all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride}         c_calc_adf_all[1]  c_calc_adf_all[2]  c_calc_adf_all[3] file ${data_path}/adf_all.dat mode vector"    "fix dump_adf_111 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride}         c_calc_adf_111[1]  c_calc_adf_111[2]  c_calc_adf_111[3] file ${data_path}/adf_111.dat mode vector"    "fix dump_adf_121 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride}         c_calc_adf_121[1]  c_calc_adf_121[2]  c_calc_adf_121[3] file ${data_path}/adf_121.dat mode vector"    "fix dump_adf_212 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride}         c_calc_adf_212[1]  c_calc_adf_212[2]  c_calc_adf_212[3] file ${data_path}/adf_212.dat mode vector"    "fix dump_adf_222 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride}         c_calc_adf_222[1]  c_calc_adf_222[2]  c_calc_adf_222[3] file ${data_path}/adf_222.dat mode vector"
+
+if "${xvfp_calcp} == 1" then    "compute calc_pe_atom all pe/atom"    "dump dump_xvfp all custom ${xvfp_exp_stride} ${data_path}/xvfp.dat          id type x y z vx vy vz fx fy fz c_calc_pe_atom"
+
+if "${temperature_calcp} == 1" then    "compute calc_temperature all temp"    "fix dump_temperature all ave/time ${temperature_exp_avg_stride} ${temperature_exp_avg_num} ${temperature_exp_stride}         c_calc_temperature file ${data_path}/temperature.dat"
+compute calc_temperature all temp
+fix dump_temperature all ave/time ${temperature_exp_avg_stride} ${temperature_exp_avg_num} ${temperature_exp_stride}         c_calc_temperature file ${data_path}/temperature.dat
+fix dump_temperature all ave/time 1 ${temperature_exp_avg_num} ${temperature_exp_stride}         c_calc_temperature file ${data_path}/temperature.dat
+fix dump_temperature all ave/time 1 1 ${temperature_exp_stride}         c_calc_temperature file ${data_path}/temperature.dat
+fix dump_temperature all ave/time 1 1 100         c_calc_temperature file ${data_path}/temperature.dat
+fix dump_temperature all ave/time 1 1 100         c_calc_temperature file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/temperature.dat
+
+if "${pressure_calcp} == 1 && ${temperature_calcp} == 1" then    "compute calc_pressure all pressure calc_temperature virial"
+compute calc_pressure all pressure calc_temperature virial
+if "${pressure_calcp} == 1 && ${temperature_calcp} != 1" then    "compute calc_pressure all pressure NULL virial"
+if "${pressure_calcp} == 1" then    "fix dump_pressure all ave/time ${pressure_exp_avg_stride} ${pressure_exp_avg_num} ${pressure_exp_stride}         c_calc_pressure file ${data_path}/pressure.dat"
+fix dump_pressure all ave/time ${pressure_exp_avg_stride} ${pressure_exp_avg_num} ${pressure_exp_stride}         c_calc_pressure file ${data_path}/pressure.dat
+fix dump_pressure all ave/time 1 ${pressure_exp_avg_num} ${pressure_exp_stride}         c_calc_pressure file ${data_path}/pressure.dat
+fix dump_pressure all ave/time 1 1 ${pressure_exp_stride}         c_calc_pressure file ${data_path}/pressure.dat
+fix dump_pressure all ave/time 1 1 100         c_calc_pressure file ${data_path}/pressure.dat
+fix dump_pressure all ave/time 1 1 100         c_calc_pressure file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/pressure.dat
+
+if "${energy_calcp} == 1" then    "compute calc_ke all ke"    "compute calc_pe all pe"    "fix dump_ke all ave/time ${energy_exp_avg_stride} ${energy_exp_avg_num} ${energy_exp_stride}         c_calc_ke c_calc_pe file ${data_path}/energy.dat"
+compute calc_ke all ke
+compute calc_pe all pe
+fix dump_ke all ave/time ${energy_exp_avg_stride} ${energy_exp_avg_num} ${energy_exp_stride}         c_calc_ke c_calc_pe file ${data_path}/energy.dat
+fix dump_ke all ave/time 1 ${energy_exp_avg_num} ${energy_exp_stride}         c_calc_ke c_calc_pe file ${data_path}/energy.dat
+fix dump_ke all ave/time 1 1 ${energy_exp_stride}         c_calc_ke c_calc_pe file ${data_path}/energy.dat
+fix dump_ke all ave/time 1 1 100         c_calc_ke c_calc_pe file ${data_path}/energy.dat
+fix dump_ke all ave/time 1 1 100         c_calc_ke c_calc_pe file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/energy.dat
+if "${momentum_calcp} == 1" then    "compute calc_momentum all momentum"    "fix dump_momentum all ave/time ${momentum_exp_avg_stride} ${momentum_exp_avg_num} ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat"
+compute calc_momentum all momentum
+fix dump_momentum all ave/time ${momentum_exp_avg_stride} ${momentum_exp_avg_num} ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat
+fix dump_momentum all ave/time 1 ${momentum_exp_avg_num} ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat
+fix dump_momentum all ave/time 1 1 ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat
+fix dump_momentum all ave/time 1 1 100         c_calc_momentum[*] file ${data_path}/momentum.dat
+fix dump_momentum all ave/time 1 1 100         c_calc_momentum[*] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/momentum.dat
+
+if "${velocity_dist_calcp} == 1" then    "compute calc_vel all property/atom vx vy vz"    "fix aveg_velocity_dist all ave/atom ${velocity_dist_exp_avg_stride} ${velocity_dist_exp_avg_num} ${velocity_dist_exp_stride}         c_calc_vel[1] c_calc_vel[2] c_calc_vel[3]"    "dump dump_velocity_dist all custom ${velocity_dist_exp_stride} ${data_path}/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]"
+compute calc_vel all property/atom vx vy vz
+fix aveg_velocity_dist all ave/atom ${velocity_dist_exp_avg_stride} ${velocity_dist_exp_avg_num} ${velocity_dist_exp_stride}         c_calc_vel[1] c_calc_vel[2] c_calc_vel[3]
+fix aveg_velocity_dist all ave/atom 1 ${velocity_dist_exp_avg_num} ${velocity_dist_exp_stride}         c_calc_vel[1] c_calc_vel[2] c_calc_vel[3]
+fix aveg_velocity_dist all ave/atom 1 1 ${velocity_dist_exp_stride}         c_calc_vel[1] c_calc_vel[2] c_calc_vel[3]
+fix aveg_velocity_dist all ave/atom 1 1 10000         c_calc_vel[1] c_calc_vel[2] c_calc_vel[3]
+dump dump_velocity_dist all custom ${velocity_dist_exp_stride} ${data_path}/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]
+dump dump_velocity_dist all custom 10000 ${data_path}/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]
+dump dump_velocity_dist all custom 10000 /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]
+
+if "${angular_momentum_calcp} == 1" then    "compute calc_angular_momentum all angmom/chunk type_chunk"    "fix dump_angular_momentum all ave/time ${angular_momentum_exp_avg_stride} ${angular_momentum_exp_avg_num} ${angular_momentum_exp_stride}         c_calc_angular_momentum[*] file ${data_path}/angular_momentum.dat mode vector"
+
+thermo_style custom step temp pe ke etotal press
+thermo 1000
+
+fix thermalize all nvt temp 0.28 0.28 0.01 tchain 7
+#fix thermalize all temp/berendsen 0.28 0.28 0.01
+#fix thermalize all nve
+timestep ${dt}
+timestep 0.0005
+run 21000
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Your simulation uses code contributions which should be cited:
+
+- Type Label Framework: https://doi.org/10.1021/acs.jpcb.3c08419
+
+@Article{Gissinger24,
+ author = {Jacob R. Gissinger, Ilia Nikiforov, Yaser Afshar, Brendon Waters, Moon-ki Choi, Daniel S. Karls, Alexander Stukowski, Wonpil Im, Hendrik Heinz, Axel Kohlmeyer, and Ellad B. Tadmor},
+ title = {Type Label Framework for Bonded Force Fields in LAMMPS},
+ journal = {J. Phys. Chem. B},
+ year =    2024,
+ volume =  128,
+ number =  13,
+ pages =   {3282--3297}
+}
+
+CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
+
+Generated 0 of 1 mixed pair_coeff terms from geometric mixing rule
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 4.5253521
+  ghost atom cutoff = 4.5253521
+  binsize = 2.2626761, bins = 3 3 3
+  5 neighbor lists, perpetual/occasional/extra = 1 4 0
+  (1) pair ntw, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton
+      stencil: half/bin/3d
+      bin: standard
+  (2) compute rdf, occasional, copy from (1)
+      attributes: half, newton on
+      pair build: copy
+      stencil: none
+      bin: none
+  (3) compute rdf, occasional, copy from (1)
+      attributes: half, newton on
+      pair build: copy
+      stencil: none
+      bin: none
+  (4) compute rdf, occasional, copy from (1)
+      attributes: half, newton on
+      pair build: copy
+      stencil: none
+      bin: none
+  (5) compute rdf, occasional, copy from (1)
+      attributes: half, newton on
+      pair build: copy
+      stencil: none
+      bin: none
+Per MPI rank memory allocation (min/avg/max) = 3.957 | 3.957 | 3.957 Mbytes
+   Step          Temp          PotEng         KinEng         TotEng         Press     
+         0   0.27280683    -6.0644806      0.40839345    -5.6560872      0.57517807   
+      1000   0.27406669    -6.0401603      0.41027948    -5.6298808      0.68877068   
+      2000   0.29611045    -6.0601602      0.44327911    -5.6168811      1.2419237    
+      3000   0.28016675    -6.0412001      0.41941131    -5.6217888      0.89214623   
+      4000   0.28737106    -6.0484608      0.4301962     -5.6182646      1.0121043    
+      5000   0.26964908    -6.0583712      0.40366629    -5.654705       0.56413481   
+      6000   0.28415512    -6.043406       0.42538191    -5.6180241      0.89781243   
+      7000   0.29156975    -6.0030563      0.43648167    -5.5665747      0.95114444   
+      8000   0.28301119    -6.0540267      0.42366945    -5.6303572      0.75141228   
+      9000   0.29095666    -6.0665864      0.43556386    -5.6310225      0.54445965   
+     10000   0.28636427    -6.0577232      0.42868902    -5.6290342      1.1312891    
+     11000   0.27422208    -6.046299       0.4105121     -5.6357869      0.95637412   
+     12000   0.28988836    -6.0710008      0.43396461    -5.6370362      1.0370144    
+     13000   0.27096625    -6.0421463      0.4056381     -5.6365082      1.09875      
+     14000   0.29817288    -6.0503915      0.44636658    -5.604025       0.75338867   
+     15000   0.28139666    -6.0420229      0.42125249    -5.6207704      0.84969983   
+     16000   0.2677674     -6.0560324      0.4008494     -5.655183       0.30384567   
+     17000   0.30504684    -6.0338643      0.45665694    -5.5772073      1.1650707    
+     18000   0.30056961    -6.0702745      0.44995451    -5.62032        0.48447049   
+     19000   0.28520105    -6.056479       0.42694768    -5.6295313      0.63413352   
+     20000   0.27955275    -6.0445985      0.41849214    -5.6261064      0.68489042   
+     21000   0.28394709    -6.0389016      0.4250705     -5.6138311      1.1693588    
+Loop time of 33.9908 on 8 procs for 21000 steps with 501 atoms
+
+Performance: 26689.540 tau/day, 617.813 timesteps/s, 309.525 katom-step/s
+95.8% CPU use with 8 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 1.8531     | 1.9777     | 2.1332     |   6.6 |  5.82
+Neigh   | 0.078224   | 0.083425   | 0.090098   |   1.3 |  0.25
+Comm    | 1.8097     | 1.9882     | 2.1123     |   7.2 |  5.85
+Output  | 0.00071744 | 0.00079213 | 0.00090087 |   0.0 |  0.00
+Modify  | 29.62      | 29.637     | 29.657     |   0.2 | 87.19
+Other   |            | 0.3042     |            |       |  0.89
+
+Nlocal:         62.625 ave          65 max          59 min
+Histogram: 1 1 0 1 0 1 0 0 1 3
+Nghost:        3112.62 ave        3132 max        3091 min
+Histogram: 1 0 1 1 1 1 1 0 1 1
+Neighs:        20070.4 ave       21857 max       18552 min
+Histogram: 1 1 0 2 1 0 1 1 0 1
+
+Total # of neighbors = 160563
+Ave neighs/atom = 320.48503
+Neighbor list builds = 170
+Dangerous builds = 0
+unfix thermalize
+Total wall time: 0:00:33

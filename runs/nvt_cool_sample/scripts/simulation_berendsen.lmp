@@ -1,0 +1,68 @@
+read_dump ${global_data_path}/initial_states/nve_${initial_num_atoms}.dat 0 x y z vx vy vz
+include ${script_path}/compute.lmp
+
+thermo_style custom step temp pe ke etotal press
+thermo 1000
+
+fix start_eq all nve
+timestep ${dt}
+run 1
+unfix start_eq
+
+variable start_T   equal c_calc_temperature
+variable T_damp    equal 0.02
+variable dt_high_T equal 0.002
+variable dt_low_T  equal 0.006
+
+#### ----- Changable
+variable final_T          equal 0.28
+variable tol_T            equal 0.00001
+variable num_cool_steps   equal 10
+variable thermalize_steps equal 30000
+variable quench_steps     equal 10
+####
+
+variable final_tol_T equal ${final_T}+${tol_T}
+
+### LINEAR STEP COOLING ###
+fix thermalize_1 all temp/berendsen ${start_T} 0.5 ${T_damp}
+timestep ${dt_high_T}
+run ${thermalize_steps}
+unfix thermalize_1
+
+fix thermalize_2 all temp/berendsen 0.5 0.428 ${T_damp}
+timestep ${dt_high_T}
+run ${thermalize_steps}
+unfix thermalize_2
+
+fix thermalize_2 all temp/berendsen 0.428 0.357 ${T_damp}
+timestep ${dt_high_T}
+run ${thermalize_steps}
+unfix thermalize_2
+
+variable from equal 0.357 #------> Changable
+variable cool_interval equal ${from}-${final_T}
+variable cool_step equal ${cool_interval}/${num_cool_steps}
+label cool_loop
+variable to   equal ${from}-${cool_step}
+
+fix quench_loop all temp/berendsen ${from} ${to} ${T_damp}
+timestep ${dt_high_T}
+run ${quench_steps}
+unfix quench_loop
+
+fix thermalize_loop all temp/berendsen ${to} ${to} ${T_damp}
+timestep ${dt_high_T}
+run ${thermalize_steps}
+unfix thermalize_loop
+
+variable from equal ${to}
+
+if "${to} > ${final_tol_T}" then "jump ${script_path}/simulation.lmp cool_loop"
+
+dump save all custom 1 ${global_data_path}/initial_states/quench_${final_T}_${initial_num_atoms}.dat id type x y z vx vy vz
+
+fix thermalize_final all temp/berendsen ${to} ${to} ${T_damp}
+timestep ${dt_high_T}
+run 1
+unfix thermalize_final

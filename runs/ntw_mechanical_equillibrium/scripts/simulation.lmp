@@ -1,0 +1,11 @@
+velocity all create ${initial_temperature} 12345 dist gaussian
+velocity all zero linear
+velocity all zero angular
+
+thermo_style custom step temp pe ke etotal press
+
+dump save all atom 1 ${global_data_path}/initial_states/${initial_num_atoms}.dat
+
+### STAGE 0 ###
+thermo 10
+minimize 1.0e-4 1.0e-6 1000 10000

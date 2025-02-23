@@ -1,0 +1,136 @@
+variable global_exp_stride               equal 100
+variable global_exp_avg_stride           equal 1
+variable global_exp_avg_num              equal 1
+
+variable xvfp_calcp                      equal 0
+variable xvfp_exp_stride                 equal 10000 #${global_exp_stride}
+
+variable temperature_calcp               equal 1
+variable temperature_exp_stride          equal ${global_exp_stride}
+variable temperature_exp_avg_stride      equal ${global_exp_avg_stride}
+variable temperature_exp_avg_num         equal ${global_exp_avg_num}
+
+variable pressure_calcp                  equal 1
+variable pressure_exp_stride             equal ${global_exp_stride}
+variable pressure_exp_avg_stride         equal ${global_exp_avg_stride}
+variable pressure_exp_avg_num            equal ${global_exp_avg_num}
+
+variable momentum_calcp                  equal 1
+variable momentum_exp_stride             equal ${global_exp_stride}
+variable momentum_exp_avg_stride         equal ${global_exp_avg_stride}
+variable momentum_exp_avg_num            equal ${global_exp_avg_num}
+
+variable angular_momentum_calcp          equal 0
+variable angular_momentum_exp_stride     equal ${global_exp_stride}
+variable angular_momentum_exp_avg_stride equal ${global_exp_avg_stride}
+variable angular_momentum_exp_avg_num    equal ${global_exp_avg_num}
+
+variable energy_calcp                    equal 1
+variable energy_exp_stride               equal ${global_exp_stride}
+variable energy_exp_avg_stride           equal ${global_exp_avg_stride}
+variable energy_exp_avg_num              equal ${global_exp_avg_num}
+
+variable velocity_dist_calcp              equal 1
+variable velocity_dist_exp_stride         equal 100000 #${global_exp_stride}
+variable velocity_dist_exp_avg_stride     equal 1 #${global_exp_avg_stride}
+variable velocity_dist_exp_avg_num        equal 1  #${global_exp_avg_num}
+
+variable rdf_calcp              equal 1
+variable rdf_exp_stride         equal 100000
+variable rdf_exp_avg_stride     equal 1
+variable rdf_exp_avg_num        equal 1000
+variable rdf_bins               equal 500
+variable rdf_cutoff_11          equal ${cut}
+variable rdf_cutoff_12          equal ${cut}
+variable rdf_cutoff_22          equal ${cut}
+
+variable adf_calcp              equal 0
+variable adf_exp_stride         equal 10000
+variable adf_exp_avg_stride     equal 1
+variable adf_exp_avg_num        equal 1
+variable adf_bins               equal 500
+variable adf_inner_cutoff_111   equal 0.0
+variable adf_inner_cutoff_121   equal 0.0
+variable adf_inner_cutoff_212   equal 0.0
+variable adf_inner_cutoff_222   equal 0.0
+variable adf_outer_cutoff_111   equal 3 #${cut}
+variable adf_outer_cutoff_121   equal 3 #${cut}
+variable adf_outer_cutoff_212   equal 3 #${cut}
+variable adf_outer_cutoff_222   equal 3 #${cut}
+
+###################################################
+############ DO NOT MODIFY ########################
+###################################################
+compute type_chunk all chunk/atom type
+
+if "${rdf_calcp} == 1"  then &
+   "compute calc_rdf_all all rdf ${rdf_bins}" &
+   "compute calc_rdf_11 all rdf ${rdf_bins} 1 1" &
+   "compute calc_rdf_12 all rdf ${rdf_bins} 1 2" &
+   "compute calc_rdf_22 all rdf ${rdf_bins} 2 2" &
+   #"fix dump_rdf_all all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride} &
+   #     c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector" &
+   "fix dump_rdf_11 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride} &
+        c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector" &
+   "fix dump_rdf_12 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride} &
+        c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector" &
+   "fix dump_rdf_22 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride} &
+        c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector"
+
+if "${adf_calcp} == 1" then &
+   "compute calc_adf_all all adf ${adf_bins}" &
+   "compute calc_adf_111 all adf ${adf_bins} 1 1 1  ${adf_inner_cutoff_111} ${adf_outer_cutoff_111} ${adf_inner_cutoff_111} ${adf_outer_cutoff_111} ordinate degree" &
+   "compute calc_adf_121 all adf ${adf_bins} 2 1 1  ${adf_inner_cutoff_121} ${adf_outer_cutoff_121} ${adf_inner_cutoff_121} ${adf_outer_cutoff_121} ordinate degree" &
+   "compute calc_adf_212 all adf ${adf_bins} 1 2 2  ${adf_inner_cutoff_212} ${adf_outer_cutoff_212} ${adf_inner_cutoff_212} ${adf_outer_cutoff_212} ordinate degree" &
+   "compute calc_adf_222 all adf ${adf_bins} 2 2 2  ${adf_inner_cutoff_222} ${adf_outer_cutoff_222} ${adf_inner_cutoff_222} ${adf_outer_cutoff_222} ordinate degree" &
+   "fix dump_adf_all all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride} &
+        c_calc_adf_all[1]  c_calc_adf_all[2]  c_calc_adf_all[3] file ${data_path}/adf_all.dat mode vector" &
+   "fix dump_adf_111 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride} &
+        c_calc_adf_111[1]  c_calc_adf_111[2]  c_calc_adf_111[3] file ${data_path}/adf_111.dat mode vector" &
+   "fix dump_adf_121 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride} &
+        c_calc_adf_121[1]  c_calc_adf_121[2]  c_calc_adf_121[3] file ${data_path}/adf_121.dat mode vector" &
+   "fix dump_adf_212 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride} &
+        c_calc_adf_212[1]  c_calc_adf_212[2]  c_calc_adf_212[3] file ${data_path}/adf_212.dat mode vector" &
+   "fix dump_adf_222 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride} &
+        c_calc_adf_222[1]  c_calc_adf_222[2]  c_calc_adf_222[3] file ${data_path}/adf_222.dat mode vector"
+
+if "${xvfp_calcp} == 1" then &
+   "compute calc_pe_atom all pe/atom" &
+   "dump dump_xvfp all custom ${xvfp_exp_stride} ${data_path}/xvfp.dat &
+         id type x y z vx vy vz fx fy fz c_calc_pe_atom"
+
+if "${temperature_calcp} == 1" then &
+   "compute calc_temperature all temp" &
+   "fix dump_temperature all ave/time ${temperature_exp_avg_stride} ${temperature_exp_avg_num} ${temperature_exp_stride} &
+        c_calc_temperature file ${data_path}/temperature.dat"
+
+if "${pressure_calcp} == 1 && ${temperature_calcp} == 1" then &
+   "compute calc_pressure all pressure calc_temperature virial"
+if "${pressure_calcp} == 1 && ${temperature_calcp} != 1" then &
+   "compute calc_pressure all pressure NULL virial"
+if "${pressure_calcp} == 1" then &
+   "fix dump_pressure all ave/time ${pressure_exp_avg_stride} ${pressure_exp_avg_num} ${pressure_exp_stride} &
+        c_calc_pressure file ${data_path}/pressure.dat"
+
+if "${energy_calcp} == 1" then &
+   "compute calc_ke all ke" &
+   "compute calc_pe all pe" &
+   "fix dump_ke all ave/time ${energy_exp_avg_stride} ${energy_exp_avg_num} ${energy_exp_stride} &
+        c_calc_ke c_calc_pe file ${data_path}/energy.dat" &
+
+if "${momentum_calcp} == 1" then &
+   "compute calc_momentum all momentum" &
+   "fix dump_momentum all ave/time ${momentum_exp_avg_stride} ${momentum_exp_avg_num} ${momentum_exp_stride} &
+        c_calc_momentum[*] file ${data_path}/momentum.dat"
+
+if "${velocity_dist_calcp} == 1" then &
+   "compute calc_vel all property/atom vx vy vz" &
+   "fix aveg_velocity_dist all ave/atom ${velocity_dist_exp_avg_stride} ${velocity_dist_exp_avg_num} ${velocity_dist_exp_stride} &
+        c_calc_vel[1] c_calc_vel[2] c_calc_vel[3]" &
+   "dump dump_velocity_dist all custom ${velocity_dist_exp_stride} ${data_path}/velocity_dist.dat id &
+        f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]"
+
+if "${angular_momentum_calcp} == 1" then &
+   "compute calc_angular_momentum all angmom/chunk type_chunk" &
+   "fix dump_angular_momentum all ave/time ${angular_momentum_exp_avg_stride} ${angular_momentum_exp_avg_num} ${angular_momentum_exp_stride} &
+        c_calc_angular_momentum[*] file ${data_path}/angular_momentum.dat mode vector"

@@ -1,0 +1,929 @@
+#+title: NTW Potential
+#+AUTHOR: Adityan S
+
+#+LATEX_CLASS_OPTIONS: [a4paper,11pt,twoside]
+#+LATEX_HEADER: \usepackage{booktabs}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage{colortbl}
+#+LATEX_HEADER: \usepackage{siunitx}
+#+LATEX_HEADER: \usepackage{tabu}
+#+LATEX_HEADER: \usepackage{etoolbox}
+#+LATEX_HEADER: \usepackage{pdflscape}
+#+LATEX_HEADER: \usepackage{pgfplots}
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usepackage{nopageno}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER:\usepackage{algorithm}
+#+LATEX_HEADER:\usepackage{algpseudocode}
+#+LATEX_HEADER: \usepackage[margin=0.5in]{geometry}
+
+#+options: tex:t toc:t date:nil
+#+startup: latexpreview
+#+startup: inlineimages
+
+- *Reference :* [[pdfview:../refs/ntw-potential-model.pdf][NTW Potential Model, Coslovich and Pastore (2009)]]
+* Potential Model
+** Potential Functions
+
+\begin{align*}
+        & U_{\alpha\alpha}(r)  = \epsilon_{\alpha\alpha} {\Big( \frac{\sigma_{\alpha\alpha}}{r} \Big)}^{12} \\
+        & U_{\alpha\beta}(r)  = 4 \epsilon_{\alpha\beta} \Big[ \Big( \frac{\sigma_{\alpha\beta}}{r} \Big)^{12} - \Big( \frac{\sigma_{\alpha\beta}}{r} \Big)^6 \Big] \\
+        & U^{\mathrm{min}}_{\alpha\beta}  = U_{\alpha\beta}(r = 2^{1/6}\sigma_{\alpha\beta}) = - \epsilon_{\alpha\beta}
+\end{align*}
+
+#+begin_export latex
+\begin{center}
+        \resizebox{\textwidth}{!}{\input{code/analysis/ntw-potentials/potential.pgf}}
+\end{center}
+#+end_export
+
+** Potential First Derivative
+
+\begin{align*}
+        & U'_{\alpha\alpha}(r) = -\frac{12\epsilon_{\alpha\alpha}}{r} {\Big( \frac{\sigma_{\alpha\alpha}}{r} \Big)}^{12} = -\frac{ 12}{r} U_{\alpha\alpha}(r) \\
+        & U'_{\alpha\beta}(r) = -\frac{24\epsilon_{\alpha\beta}}{r}\Big[ 2\Big(\frac{\sigma_{\alpha\beta}}{r} \Big)^{12} - {\Big( \frac{\sigma_{\alpha\beta}}{r} \Big)}^6 \Big]
+\end{align*}
+
+** Potential Second Derivative
+
+\begin{align*}
+        & U''_{\alpha\alpha}(r) = \frac{156\epsilon_{\alpha\alpha}}{r^2} {\Big( \frac{\sigma_{\alpha\alpha}}{r} \Big)}^{12} = \frac{156}{r^2} U_{\alpha\alpha}(r) \\
+        & U''_{\alpha\beta}(r) = \frac{24\epsilon_{\alpha\beta}}{r^2}\Big[ 26\Big(\frac{\sigma_{\alpha\beta}}{r} \Big)^{12} - 7\Big( \frac{\sigma_{\alpha\beta}}{r} \Big)^6 \Big]
+\end{align*}
+
+** Force
+
+\begin{align*}
+        & \vec{F}_{\alpha\alpha}(\Delta\vec{r}) = -\frac{U'_{\alpha\alpha}}{r} \Delta \vec{r} = \frac{12\epsilon_{\alpha\alpha}}{r^2} {\Big( \frac{\sigma_{\alpha\alpha}}{r} \Big)}^{12} \Delta \vec{r} \\
+        & \vec{F}_{\alpha\beta}(\Delta\vec{r}) = -\frac{U'_{\alpha\beta}}{r} \Delta \vec{r} = \frac{24\epsilon_{\alpha\beta}}{r^2}\Big[ 2\Big(\frac{\sigma_{\alpha\beta}}{r} \Big)^{12} - {\Big( \frac{\sigma_{\alpha\beta}}{r} \Big)}^6 \Big] \Delta \vec{r}
+\end{align*}
+
+** Potential \(n^{th}\) Derivative
+
+\begin{align*}
+        & U^{(n)}_{\alpha\alpha}(r) =(-1)^m \frac{(11+m)!}{11!} \frac{\epsilon_{\alpha\alpha}}{r^2} \Big( \frac{\sigma_{\alpha\alpha}}{r} \Big)^{12} \\
+        & U^{(n)}_{\alpha\beta}(r) = (-1)^m \frac{4\epsilon_{\alpha\beta}}{r^2}\Big[ \frac{(11+m)!}{11!} \Big(\frac{\sigma_{\alpha\beta}}{r} \Big)^{12} - \frac{(5+m)!}{5!}  \Big( \frac{\sigma_{\alpha\beta}}{r} \Big)^6 \Big]
+\end{align*}
+
+* Smooth Potentials with Cutoffs
+** Truncated Potential
+In the NTW Model, the cut-off radius is given as
+
+\begin{align*}
+        & r_{c} = \gamma\sigma_{\alpha\beta} \\
+        & \gamma = 2.111
+\end{align*}
+
+Since the potential is truncated at \(r_c\), the potential becomes discontinuous at \(r_c\).
+
+\begin{align*}
+        & U_{\alpha\alpha}(r_c) = 7.779072698006755 \times 10^{-5} \epsilon_{\alpha\alpha} \\
+        & U_{\alpha\beta}(r_c) = -3.496845772044081 \times 10^{-2} \epsilon_{\alpha\beta}
+\end{align*}
+
+#+begin_export latex
+\begin{center}
+        \resizebox{\textwidth}{!}{\input{code/analysis/ntw-potentials/truncated-potential.pgf}}
+\end{center}
+#+end_export
+
+** Shifted Potential
+
+It is possible to remove this discontinuity by shifting the potential.
+
+\begin{align*}
+V_{\alpha\beta}(r) =
+\left\{
+    \begin{array}{lr}
+        V_{\alpha\beta}(r) = U_{\alpha\beta}(r) - U_{\alpha\beta}(r_c) &  r < r_c \\
+        0 &  r > r_c \\
+    \end{array}
+\right\}
+\end{align*}
+
+But the higher derivatives of potential and forces still remain discontinuous at \(r_c\). Also the shift changes the interactions.
+
+#+begin_export latex
+\begin{center}
+        \resizebox{\textwidth}{!}{\input{code/analysis/ntw-potentials/shifted-potential.pgf}}
+\end{center}
+#+end_export
+
+** \(C^{1}\) Continuity of Potential
+
+One can introdurce a switching function \(f_{\alpha\beta}(r)\) in the interval \(r_c < r < A_{\alpha\beta}\) for some healing length \(A_{\alpha\beta} > r_c\)
+
+
+\begin{align*}
+V_{\alpha\beta}(r) =
+\left\{
+    \begin{array}{lr}
+        U_{\alpha\beta}(r) &  r < r_c \\
+        f_{\alpha\beta}(r) &  r_c < r < A_{\alpha\beta}  \\
+        0 &  r > A_{\alpha\beta}(r) \\
+    \end{array}
+\right\}
+\end{align*}
+
+*** Existance of \(C^\infty\) continuous \(f_{\alpha\beta}(r)\)
+
+Consider a switching function \(f_{\alpha\beta}(r)\), which is \(C^\infty\) continuous (analytic) for all \(r\). Taylor expand \(f_{\alpha\beta}(r)\) at \(A_{\alpha\beta}\).
+
+\begin{align*}
+f_{\alpha\beta}(r) = \lim_{n\to\infty} \sum\limits_{k=0}^n c^{[k]}_{\alpha\beta}(r - A_{\alpha\beta})^k
+\end{align*}
+
+For \(C^\infty\) continuous smoothening we require that all higher order derivatives of potential at \(r = A_{\alpha\beta}\) must exist.
+
+\begin{align*}
+f^{(m)}_{\alpha\beta}(A_{\alpha\beta}) = \lim_{r \to A^-_{\alpha\beta}} V^{(m)}_{\alpha\beta}(r) =
+\lim_{r \to A^+_{\alpha\beta}} V^{(m)}_{\alpha\beta}(r) = 0 \quad \forall m \in \mathrm{Z^+}
+\end{align*}
+
+Hence the only \(C^\infty\) continuous solution for above smoothening is \(f_{\alpha\beta}(r)=0\).
+
+*** Existance of \(C^{n+1}\) continuous \(f_{\alpha\beta}(r)\)
+
+Consider the power series for the switching function \(f_{\alpha\beta}(r)\), which is \(C^{n+1}\) for all \(r\).
+
+\begin{align*}
+f_{\alpha\beta}(r) = B_{\alpha\beta}(r - A_{\alpha\beta})^{n+1}
+\end{align*}
+
+where the \((n+1)^{th}\) derivative does not exist at \(r = A_{\alpha\beta}\).
+
+\begin{align*}
+& f^{(m)}_{\alpha\beta}(A_{\alpha\beta}) = \lim_{r \to A^-_{\alpha\beta}} V^{(m)}_{\alpha\beta}(r) = \lim_{r \to A^+_{\alpha\beta}} V^{(m)}_{\alpha\beta}(r) = 0 \quad \forall m \in \mathrm{Z^+}/\{n+1\} \\
+& f^{(n+1)}_{\alpha\beta}(A_{\alpha\beta}) = \lim_{r \to A^-_{\alpha\beta}} V^{(n+1)}_{\alpha\beta}(r) = (n+1)! B_{\alpha\beta} \neq \lim_{r \to A^+_{\alpha\beta}} V^{(n+1)}_{\alpha\beta}(r) = 0
+\end{align*}
+
+Hence the modified potential,
+
+\begin{align*}
+V_{\alpha\beta}(r) =
+\left\{
+    \begin{array}{lr}
+        U_{\alpha\beta}(r) &  r < r_c \\
+         B_{\alpha\beta}(r - A_{\alpha\beta})^{n+1}&  r_c < r < A_{\alpha\beta}  \\
+        0 &  r > A_{\alpha\beta}(r) \\
+    \end{array}
+\right\}
+\end{align*}
+
+Considering the existance of $n$ derivatives at $r = r_c$, the below equality must be satisfied.
+
+\begin{align}
+        U^{(m)}_{\alpha\beta}(r_c) = \lim_{r \to r_c^-} V^{(m)}_{\alpha\beta}(r) = \lim_{r \to r_c^+} V^{(m)}_{\alpha\beta}(r) = \frac{(n+1)!}{(n-m+1)!}B_{\alpha\beta} (r_c-A_{\alpha\beta})^{n-m+1} \quad \forall m \in [0, n]
+\end{align}
+
+The above contains \(n+1\) equations and 2 unknowns. Further simplifing to \(n\) equations and 1 unknown by eliminating \(B_{\alpha\beta}\),
+
+\begin{align*}
+        \frac{U^{(m)}_{\alpha\beta}(r_c)}{U^{(m+1)}_{\alpha\beta}(r_c)} = \frac{r_c-A_{\alpha\beta}}{n-m+1} \quad \forall m \in [0, n-1]
+\end{align*}
+
+Hence \(C^n\) continuous switching functions exist only if the unmodified potential satisfies the below \(n-1\) equations
+
+\begin{align*}
+        (n-m+1)\frac{U^{(m)}_{\alpha\beta}(r_c)}{U^{(m+1)}_{\alpha\beta}(r_c)} = (n-m)\frac{U^{(m+1)}_{\alpha\beta}(r_c)}{U^{(m+2)}_{\alpha\beta}(r_c)} \quad \forall m \in [0, n-2]
+\end{align*}
+
+Therefore, we can conclude that for any general potential that does not satisfy the above condition only \(C^1\) continuous, (quadratic) switching functions exist. If one considers including a variable shift \(C_{\alpha\beta}\) in the unmodified potential \(U_{\alpha\beta}(r)\), \(C^1\) continuous, (cubic) switching functions exist.
+
+** \(C^{2}\) continuous with Cubic Switching Function and Shift (NTW)
+
+The NTW potential with a shift and \(C^2\) continuous (cubic) switching function is given by,
+
+\begin{align*}
+V_{\alpha\beta}(r) =
+\left\{
+    \begin{array}{lr}
+        U_{\alpha\beta}(r) + C_{\alpha\beta} &  r < r_c \\
+        B_{\alpha\beta}(r - A_{\alpha\beta})^3 &  r_c < r < A_{\alpha\beta}  \\
+        0 &  r > A_{\alpha\beta}(r) \\
+    \end{array}
+\right\}
+\end{align*}
+
+*Reference :* [[file:reference/smooth_cutoff.pdf][Geometric Approach to the Dynamic Glass Transition]]
+Hence solving eq. \((1)\) for the above potential we get,
+
+\begin{align*}
+& \lim_{r \to r_c^-} V_{\alpha\beta}(r) = \lim_{r \to r_c^+} V_{\alpha\beta}(r) \\
+& \lim_{r \to r_c^-} V^{(1)}_{\alpha\beta}(r) = \lim_{r \to r_c^+} V^{(1)}_{\alpha\beta}(r) \\
+& \lim_{r \to r_c^-} V^{(2)}_{\alpha\beta}(r) = \lim_{r \to r_c^+} V^{(2)}_{\alpha\beta}(r)
+\end{align*}
+
+\begin{align*}
+& U_{\alpha\beta}(r_c) + C_{\alpha\beta} = B_{\alpha\beta} (r_c-A_{\alpha\beta})^{3} \\
+& U^{(1)}_{\alpha\beta}(r_c) = 3B_{\alpha\beta} (r_c-A_{\alpha\beta})^{2 }\\
+& U^{(2)}_{\alpha\beta}(r_c) = 6B_{\alpha\beta} (r_c-A_{\alpha\beta})
+\end{align*}
+
+\begin{align*}
+A_{\alpha\beta} = r_c - 2\frac{U^{(1)}_{\alpha\beta}(r_c)}{U^{(2)}_{\alpha\beta}(r_c)}, \quad
+B_{\alpha\beta} = \frac{1}{12} \frac{(U^{(2)}_{\alpha\beta}(r_c))^2}{U^{(1)}_{\alpha\beta}(r_c)}, \quad
+C_{\alpha\beta} = \frac{2}{3} \frac{(U^{(1)}_{\alpha\beta}(r_c))^2}{U^{(2)}_{\alpha\beta}(r_c)} - U_{\alpha\beta}(r_c)
+\end{align*}
+
+***  \(\alpha = \beta\)
+
+\begin{align*}
+U_{\alpha\alpha}(r_c) = \frac{\epsilon_{\alpha\alpha}}{\gamma^{12}}, \quad
+U^{(1)}_{\alpha\alpha}(r_c) = -\frac{12}{\gamma^{13}} \frac{\epsilon_{\alpha\alpha}}{\sigma_{\alpha\alpha}}, \quad
+U^{(2)}_{\alpha\alpha}(r_c) = \frac{156}{\gamma^{14}} \frac{\epsilon_{\alpha\alpha}}{\sigma_{\alpha\alpha}^{2}}
+\end{align*}
+
+\begin{align*}
+        & A_{\alpha\alpha} = \frac{15}{13} \gamma\sigma_{\alpha\alpha} = \frac{15}{13} r_c = 2.5384615384615383\sigma_{\alpha\alpha} = 1.1538461538461537r_c \\
+        & \Delta_{\alpha\alpha} = A_{\alpha\alpha} - r_c =  \frac{2}{13} r_c = 0.15384615384615385r_c = 0.3384615384615385\sigma_{\alpha\alpha} \\
+        & B_{\alpha\alpha} = - \frac{169}{\gamma^{15}} \frac{\epsilon_{\alpha\alpha}}{\sigma_{\alpha\alpha}^{3}} =  -0.0012346574811825137\frac{\epsilon_{\alpha\alpha}}{\sigma_{\alpha\alpha}^{3}} \\
+        & C_{\alpha\alpha} = - \frac{5}{13\gamma^{12}} \epsilon_{\alpha\alpha} = -2.991951037694904 \times 10^{-5}\epsilon_{\alpha\alpha}
+\end{align*}
+
+***  \(\alpha \neq \beta\)
+
+\begin{align*}
+U_{\alpha\beta}(r_c) = -4\Big(\frac{\gamma^6-1}{\gamma^{12}}\Big) \epsilon_{\alpha\beta}, \quad
+U^{(1)}_{\alpha\beta}(r_c) = 24\Big(\frac{\gamma^6-2}{\gamma^{13}}\Big) \frac{\epsilon_{\alpha\beta}}{\sigma_{\alpha\beta}}, \quad
+U^{(2)}_{\alpha\beta}(r_c) = -24\Big(\frac{7\gamma^6-26}{\gamma^{14}}\Big) \frac{\epsilon_{\alpha\beta}}{\sigma_{\alpha\beta}^{2}}
+\end{align*}
+
+\begin{align*}
+        & A_{\alpha\beta} = 3\Big(\frac{3\gamma^6-10}{7\gamma^6-26}\Big)\gamma \sigma_{\alpha\beta} = 3\Big(\frac{3\gamma^6-10}{7\gamma^6-26}\Big)r_c = 2.8383972156982633\sigma_{\alpha\beta} = 1.2901805525901195r_c \\
+        & \Delta_{\alpha\beta} = A_{\alpha\beta} - r_c =  0.2901805525901195r_c = 0.13190025117732707\sigma_{\alpha\beta} \\
+        & B_{\alpha\beta} = \frac{2}{\gamma^{15}} \Big(\frac{(7\gamma^6-26)^2}{\gamma^6-2}\Big) \frac{\epsilon_{\alpha\beta}}{\sigma_{\alpha\beta}^{3}} = 0.07730721127009055\frac{\epsilon_{\alpha\beta}}{\sigma_{\alpha\beta}^{3}} \\
+        & C_{\alpha\beta} = \frac{4}{\gamma^{12}}  \Big(\frac{(3\gamma^6-2)(\gamma^6-5)}{7\gamma^6-26}\Big) \epsilon_{\alpha\beta} = 0.014854711800489003\epsilon_{\alpha\beta}
+\end{align*}
+
+#+begin_export latex
+\begin{center}
+        \resizebox{\textwidth}{!}{\input{code/analysis/ntw-potentials/smooth-potential.pgf}}
+\end{center}
+#+end_export
+
+*** Numerical Error during Transition
+
+|            | \(\lim_{r \to r_c^-} \frac{V_{\alpha\beta}(r)}{\epsilon_{\alpha\beta}} = \frac{U_{\alpha\beta}(r_c)}{\epsilon_{\alpha\beta}}\) | \(\lim_{r \to r_c^+} \frac{V_{\alpha\beta}(r)}{\epsilon_{\alpha\beta}} = \frac{B_{\alpha\beta}(r_c - A_{\alpha\beta})^3}{\epsilon_{\alpha\beta}}\) | \(\delta \)                      |
+| \(\alpha = \beta\) | 4.787121660311851 \times 10^{-5}                                        | 4.7871216603118325 \times 10^{-5}                                               | 1.8295911660692887 \times 10^{-19}  |
+| \(\alpha \neq \beta\) | -0.02011374591995181                                            | -0.02011374591995176                                                    | -5.204170427930421  \times 10^{-17} |
+
+* Model Parameters
+
+** Reduced Units
+
+We use the standard lennard jones reduced units scheme. *Reference* : [[file:reference/allen_tildesley.pdf][Computer Simulation of Liquids]]
+
+\begin{align*}
+Q = Q^* \times f(\sigma, \epsilon, m)
+\end{align*}
+
+where \(Q^*\) is a dimensional quantity corresponding to \(Q\) in the reduced units. The conversion factor \(f\) can be found using dimensional analysis.
+
+| Distance    | \(x = x^* \times \sigma_{11} \)                           |
+| Energy      | \(E = E^* \times \epsilon_{11} \)                           |
+| Temperature | \(T = T^* \times \frac{\epsilon_{11}}{k_B} \)               |
+| Mass        | \(m = m^* \times m_{1} \)                            |
+| Time        | \(t = t^* \times \sqrt{\frac{m_1 \sigma^2_{11}}{\epsilon_{11}}} \) |
+| Density     | \(\rho = \rho^* \times \frac{m_1}{\sigma^3_{11}} \)            |
+| Force       | \(F = F^* \times \frac{\epsilon_{11}}{\sigma_{11}}\)               |
+| Pressure    | \(P = P^* \times \frac{\epsilon_{11}}{\sigma^3_{11}} \)             |
+
+** Parameters
+
+Following [[file:reference/Coslovich-Pastore-2009.pdf][Coslovich & Pastore]],
+
+*** Si & O fractions
+
+\begin{align*}
+        & 1 \implies Si & 2 \implies O \\
+        & \chi_1 = \frac{N_1}{N_1 + N_2} = 0.33 & \chi_2 = \frac{N_2}{N_1 + N_2} = 0.67 \\
+\end{align*}
+
+*** Distance
+- $\sigma_{11}$, chosen such that the peak of the partial pair-correlation function $g_{11}(r)$ (Radial distribution function) for NTW potential model (state at $\rho^* = 1.655$ and $T^* = 0.39$) matches the peak from BKS potential model for silica (at $r = 3.12\textup{~\AA}$) (state at $\rho = 2.37\mathrm{g/cm^{3}}$ and $T = 2750K$).
+
+\begin{align*}
+& \sigma_{11} = 2.84\textup{~\AA} \\
+& \sigma^*_{11} = \frac{\sigma_{11}}{\sigma_{11}} = 1.00, \quad
+\sigma^*_{12} = \frac{\sigma_{12}}{\sigma_{11}} = 0.49, \quad
+\sigma^*_{22} = \frac{\sigma_{22}}{\sigma_{11}} = 0.85 \\
+& \implies \sigma_{12} = 1.3916 \textup{~\AA} , \quad
+\sigma_{22} = 2.414 \textup{~\AA}
+\end{align*}
+
+Hence cutoff for each pair,
+
+\begin{align*}
+& (r_c)_{\alpha\beta} = 2.2 \sigma_{\alpha\beta} \implies
+(r_c)^*_{\alpha\beta} = 2.2 \sigma^*_{\alpha\beta} \\
+& (r_c)^*_{11} = 2.2, \quad
+(r_c)^*_{12} = 1.078, \quad
+(r_c)^*_{22} = 1.87 \\
+& \implies
+(r_c)_{11} = 6.284 \textup{~~\AA},\quad
+(r_c)_{12} = 3.062\textup{~~\AA}, \quad
+(r_c)_{22} = 5.311\textup{~~\AA}
+\end{align*}
+
+*** Energy & Temperature
+
+- \(\epsilon_{11}\), chosen such that the peaks of the partial pair-correlation functions \(g_{\alpha\beta}(r)\) (Radial distribution function) for NTW potential model (state at \(\rho^* = 1.655\) and \(T^* = 0.39\)) matches the peaks from BKS potential model for silica (state at \(\rho = 2.37\mathrm{g/cm^{3}}\) and \(T = 2750K\)).
+
+\begin{align*}
+ & \frac{\epsilon_{11}}{k_B} = \frac{T_{BKS}}{T^*} =  \frac{T}{T^*} =7000K \implies \epsilon_{11} = 9.66453964 \times 10^{-20}\mathrm{J} = 0.6040337\mathrm{eV} \\
+& \epsilon^*_{11} = \frac{\epsilon_{11}}{\epsilon_{11}} = 1.00, \quad
+\epsilon^*_{12} = \frac{\epsilon_{12}}{\epsilon_{11}} = 6.00, \quad
+\epsilon^*_{22} = \frac{\epsilon_{22}}{\epsilon_{11}} = 1.00 \\
+& \implies \epsilon_{12} = 5.798723784 \times 10^{-19} \mathrm{J} = 3.6242022 \mathrm{eV} , \quad
+\epsilon_{22} = 9.66453964 \times 10^{-20}\mathrm{J} = 0.6040337\mathrm{eV}
+\end{align*}
+
+*** Time, Mass & Density
+
+
+\(m_1\) is chosen such that the VDOS of NTW model (at state point \(\rho^* = 1.53\) and \(T^{*} = 0.30\)) yields 'reasonable' agreement between experimental VDOS of amorphous silica.
+
+\begin{align*}
+& m_{Si} = 28.085 \mathrm{amu}, \quad m_{O} = 15.999 \mathrm{amu} \\
+& m_{1} = 8.7 \times 10^{-23}\mathrm{g} = 8.7 \times 10^{-26}\mathrm{kg} = 52.393\mathrm{amu} = 1.9m_{Si} \\
+& m^*_{1} = \frac{m_{1}}{m_{1}} = 1.00, \quad
+m^*_{2} = \frac{m_{2}}{m_{1}} = \frac{m_{O}}{m_{Si}} = 0.57 \\
+& m_{2} = 4.96 \times 10^{-23}\mathrm{g} = 4.96 \times 10^{-26}\mathrm{kg} = 29.864\mathrm{amu} = 1.9m_{O}
+\end{align*}
+
+Unit of time,
+
+\[
+\frac{t}{t^*} = \sqrt{\frac{m_1\sigma^2_{11}}{\epsilon_{11}}} = 2.0 \times 10^{-13} \mathrm{s} = 0.2\mathrm{ps} = 200\mathrm{fs}
+\]
+
+Unit of Density can be calculated from state point at which energy unit was calculated,
+
+\[
+        \frac{\rho_{BKS}}{\rho^*} = 1.423\mathrm{g/cm^{3}} = 1423 \mathrm{kg/m^{3}}
+\]
+
+At constant Volume (NVE),
+
+
+\begin{align*}
+& \frac{\rho_{BKS}}{\rho} = \frac{N_1 m_{Si} + N_2 m_{O}}{N_1m_1 + N_2 m_2} = \frac{\chi_1 m_{Si} + \chi_2 m_{O}}{\chi_1m_1 + \chi_2 m_2} = \frac{1}{1.9} \\
+& \frac{\rho}{\rho^*} = 2.704\mathrm{g/cm^{3}} = 2704 \mathrm{kg/m^{3}}
+\end{align*}
+
+From Dimensional Analysis
+\[
+  \frac{\rho}{\rho^*} = \frac{1}{\sigma^{3}_{11}} = 4.36 \times 10^{28} \mathrm{\frac{atoms}{m^{3}}}
+\]
+*** Force & Pressure
+
+\begin{align*}
+        & \frac{F}{F^*} = \frac{\epsilon_{11}}{\sigma_{11}} = 3.403 \times 10^{-10} \mathrm{N} \\
+        & \frac{P}{P^*} =  \frac{\epsilon_{11}}{\sigma^3_{11}} =  4.22 \times 10^{9} \mathrm{Pa} = 4.22 \mathrm{GPa}
+\end{align*}
+
+*** Potential (NTW) Parameters
+
+\begin{align*}
+A^*_{12} &= 1.390814635692149\implies A_{12}  = 3.949913565365703 \textup{~\AA}\\
+\Delta^*_{12} &= 0.31281463569214885\implies \Delta_{12}  = 0.8883935653657028\textup{~\AA}\\
+B^*_{12} &= 3.942602721829708\implies B_{12} = 99.80686615325224\mathrm{GPa}\\
+C^*_{12} &=  0.08912827080293402 \implies C_{12} = 5.168302237317663\times 10^{-20}\mathrm{J} = 0.32301888983235394\mathrm{eV} \\ \\
+A^*_{11} &= 2.5384615384615383, \implies A_{11}  = 7.209230769230769 \textup{~\AA} \\
+\Delta^*_{11} &= 0.33846153846153815 \implies \Delta_{11}  = 0.9612307692307683 \textup{~\AA} \\
+B^*_{11} &= -1.2346574811825137\times 10^{-03} \implies B_{11} = -0.03125531600919369 \mathrm{GPa} \\
+C^*_{11} &= -2.991951037694904\times 10^{-05} \implies C_{11} = -1.734949764284492 \times 10^{-23} \mathrm{J} = 0.10843436026778075\mathrm{meV} \\ \\
+A^*_{22} &= 2.1576923076923076\implies A_{22}  = 6.127846153846153\\
+\Delta^*_{22} &= 0.28769230769230747\implies \Delta_{22}  = 0.8170461538461533\textup{~\AA}\\
+B^*_{22} &= -2.0104335130185446 \times 10^{-03}\implies B_{22} = -0.050894062298707424\mathrm{GPa}\\
+C^*_{22} &= -2.991951037694904\times 10^{-05}\implies C_{22} = -1.734949764284492 \times 10^{-23} \mathrm{J} = 0.10843436026778075\mathrm{meV}
+\end{align*}
+
+** Plot of Potential
+
+#+begin_export latex
+\begin{center}
+        \resizebox{\textwidth}{!}{\input{code/analysis/ntw-potentials/all-potentials.pgf}}
+\end{center}
+#+end_export
+
+* LAMMPS Implementation
+
+The above NTW model can be implemented in LAMMPS as a =pair_style=.
+
+** File Structure
+
+=$LAMMPS_SRC_DIR/src/pair_ntw.h=
+
+#+begin_src c
+#ifdef PAIR_CLASS
+// clang-format off
+PairStyle(ntw,PairNTW);
+// clang-format on
+#else
+
+#ifndef PAIR_NTW_H
+#define PAIR_NTW_H
+
+#include "pair.h"
+
+namespace LAMMPS_NS {
+    // ... NTW Class Declaration Goes Here
+}
+
+#endif    // PAIR_NTW_H
+#endif
+#+end_src
+
+=$LAMMPS_SRC_DIR/src/pair_ntw.cpp=
+
+#+begin_src c
+#include "pair_ntw.h"
+
+#include "atom.h"
+#include "comm.h"
+#include "error.h"
+#include "force.h"
+#include "memory.h"
+#include "neigh_list.h"
+
+#include <cmath>
+#include <cstring>
+#include <iostream>
+
+using namespace LAMMPS_NS;
+
+// ... NTW Class Defenition Goes Here
+#+end_src
+
+** Class Declaration
+
+#+begin_src c
+class PairNTW : public Pair {
+ public:
+  PairNTW(class LAMMPS *);
+  ~PairNTW() override;
+
+  void compute(int, int) override;
+  void settings(int, char **) override;
+  void coeff(int, char **) override;
+  double init_one(int, int) override;
+
+  void write_restart(FILE *) override;
+  void read_restart(FILE *) override;
+  void write_restart_settings(FILE *) override;
+  void read_restart_settings(FILE *) override;
+  void write_data(FILE *) override;
+  void write_data_all(FILE *) override;
+
+  double single(int, int, int, int, double, double, double, double &) override;
+  void *extract(const char *, int &) override;
+
+ protected:
+  double gamma;
+  double **cut;
+  double **rc, **rcsq;
+  double **epsilon, **sigma;
+  double **A, **B, **C, **Asq;
+  double **lj1, **lj2, **lj3, **lj4, **offset;
+
+  virtual void allocate();
+};
+#+end_src
+
+** Constructor & Memory Allocation
+
+Create memory for variables =sigma=, =epsilon=, =rc=, =cut=, =A=, =B=, =C=, =Asq=, =rcsq=, etc,.
+
+#+begin_src c
+PairNTW::PairNTW(LAMMPS *lmp) : Pair(lmp)
+{
+  writedata = 1;
+}
+
+void PairNTW::allocate()
+{
+  allocated = 1;
+  int n = atom->ntypes + 1;
+
+  memory->create(setflag, n, n, "pair:setflag");
+  for (int i = 1; i < n; i++)
+    for (int j = i; j < n; j++) setflag[i][j] = 0;
+
+  memory->create(cutsq, n, n, "pair:cutsq");
+  memory->create(cut, n, n, "pair:cut");
+  memory->create(rc, n, n, "pair:rc");
+  memory->create(rcsq, n, n, "pair:rcsq");
+  memory->create(epsilon, n, n, "pair:epsilon");
+  memory->create(sigma, n, n, "pair:sigma");
+  memory->create(A, n, n, "pair:A");
+  memory->create(Asq, n, n, "pair:Asq");
+  memory->create(B, n, n, "pair:B");
+  memory->create(C, n, n, "pair:C");
+  memory->create(lj1, n, n, "pair:lj1");
+  memory->create(lj2, n, n, "pair:lj2");
+  memory->create(lj3, n, n, "pair:lj3");
+  memory->create(lj4, n, n, "pair:lj4");
+  memory->create(offset, n, n, "pair:offset");
+}
+#+end_src
+
+** Destructor
+
+Free memory for variables =sigma=, =epsilon=, =rc=, =cut=, =A=, =B=, =C=, =Asq=, =rcsq=, etc,.
+
+#+begin_src c
+PairNTW::~PairNTW()
+{
+  if (copymode) return;
+
+  if (allocated) {
+    memory->destroy(setflag);
+    memory->destroy(cutsq);
+
+    memory->destroy(cut);
+    memory->destroy(rc);
+    memory->destroy(rcsq);
+    memory->destroy(epsilon);
+    memory->destroy(sigma);
+    memory->destroy(A);
+    memory->destroy(Asq);
+    memory->destroy(B);
+    memory->destroy(C);
+    memory->destroy(lj1);
+    memory->destroy(lj2);
+    memory->destroy(lj3);
+    memory->destroy(lj4);
+    memory->destroy(offset);
+  }
+}
+#+end_src
+
+** =pair_style= Implementation
+
+#+begin_src c
+void PairNTW::settings(int narg, char **arg)
+{
+  if (narg != 1) error->all(FLERR, "Illegal pair_style command");
+
+  gamma = utils::numeric(FLERR, arg[0], false, lmp);
+}
+#+end_src
+
+** =pair_coeff= Implementation
+
+#+begin_src c
+void PairNTW::coeff(int narg, char **arg)
+{
+  if (narg < 4) error->all(FLERR, "Incorrect args for pair coefficients");
+  if (!allocated) allocate();
+
+  int ilo, ihi, jlo, jhi;
+  utils::bounds(FLERR, arg[0], 1, atom->ntypes, ilo, ihi, error);
+  utils::bounds(FLERR, arg[1], 1, atom->ntypes, jlo, jhi, error);
+
+  double epsilon_one = utils::numeric(FLERR, arg[2], false, lmp);
+  double sigma_one = utils::numeric(FLERR, arg[3], false, lmp);
+
+  int count = 0;
+  for (int i = ilo; i <= ihi; i++) {
+    for (int j = MAX(jlo, i); j <= jhi; j++) {
+      epsilon[i][j] = epsilon_one;
+      sigma[i][j] = sigma_one;
+      setflag[i][j] = 1;
+      count++;
+    }
+  }
+
+  if (count == 0) error->all(FLERR, "Incorrect args for pair coefficients");
+}
+#+end_src
+
+** Write/Read Data & Restarts
+
+The below reads and writes are done only by Proc 0.
+
+#+begin_src c
+void PairNTW::write_restart(FILE *fp)
+{
+  write_restart_settings(fp);
+
+  int i, j;
+  for (i = 1; i <= atom->ntypes; i++)
+    for (j = i; j <= atom->ntypes; j++) {
+      fwrite(&setflag[i][j], sizeof(int), 1, fp);
+      if (setflag[i][j]) {
+        fwrite(&epsilon[i][j], sizeof(double), 1, fp);
+        fwrite(&sigma[i][j], sizeof(double), 1, fp);
+        fwrite(&cut[i][j], sizeof(double), 1, fp);
+      }
+    }
+}
+
+void PairNTW::read_restart(FILE *fp)
+{
+  read_restart_settings(fp);
+  allocate();
+
+  int i, j;
+  int me = comm->me;
+  for (i = 1; i <= atom->ntypes; i++)
+    for (j = i; j <= atom->ntypes; j++) {
+      if (me == 0) utils::sfread(FLERR, &setflag[i][j], sizeof(int), 1, fp, nullptr, error);
+      MPI_Bcast(&setflag[i][j], 1, MPI_INT, 0, world);
+      if (setflag[i][j]) {
+        if (me == 0) {
+          utils::sfread(FLERR, &epsilon[i][j], sizeof(double), 1, fp, nullptr, error);
+          utils::sfread(FLERR, &sigma[i][j], sizeof(double), 1, fp, nullptr, error);
+          utils::sfread(FLERR, &cut[i][j], sizeof(double), 1, fp, nullptr, error);
+        }
+        MPI_Bcast(&epsilon[i][j], 1, MPI_DOUBLE, 0, world);
+        MPI_Bcast(&sigma[i][j], 1, MPI_DOUBLE, 0, world);
+        MPI_Bcast(&cut[i][j], 1, MPI_DOUBLE, 0, world);
+      }
+    }
+}
+
+void PairNTW::write_restart_settings(FILE *fp)
+{
+  fwrite(&gamma, sizeof(double), 1, fp);
+}
+
+void PairNTW::read_restart_settings(FILE *fp)
+{
+  int me = comm->me;
+  if (me == 0) { utils::sfread(FLERR, &gamma, sizeof(double), 1, fp, nullptr, error); }
+  MPI_Bcast(&gamma, 1, MPI_DOUBLE, 0, world);
+}
+
+void PairNTW::write_data(FILE *fp)
+{
+  for (int i = 1; i <= atom->ntypes; i++) fprintf(fp, "%d %g %g\n", i, epsilon[i][i], sigma[i][i]);
+}
+
+void PairNTW::write_data_all(FILE *fp)
+{
+  for (int i = 1; i <= atom->ntypes; i++)
+    for (int j = i; j <= atom->ntypes; j++)
+      fprintf(fp, "%d %d %g %g %g %g %g %g\n", i, j, epsilon[i][j], sigma[i][j], cut[i][j], A[i][j],
+              B[i][j], C[i][j]);
+}
+#+end_src
+
+** =extract= Implementation
+
+#+begin_src c
+void *PairNTW::extract(const char *str, int &dim)
+{
+  dim = 2;
+  if (strcmp(str, "epsilon") == 0) return (void *) epsilon;
+  if (strcmp(str, "sigma") == 0) return (void *) sigma;
+  if (strcmp(str, "switch_a") == 0) return (void *) A;
+  if (strcmp(str, "switch_b") == 0) return (void *) B;
+  if (strcmp(str, "switch_c") == 0) return (void *) C;
+  if (strcmp(str, "cutoff") == 0) return (void *) rc;
+  return nullptr;
+}
+#+end_src
+
+** Initialize Parameters
+
+#+begin_src c
+double PairNTW::init_one(int i, int j)
+{
+
+  double A0, B0, C0, g, g3, g6, g12, g15;
+
+  g = gamma;
+  g3 = g * g * g;
+  g6 = g3 * g3;
+  g12 = g6 * g6;
+  g15 = g12 * g3;
+
+  if (setflag[i][j] == 0) {
+    epsilon[i][j] = mix_energy(epsilon[i][i], epsilon[j][j], sigma[i][i], sigma[j][j]);
+    sigma[i][j] = mix_distance(sigma[i][i], sigma[j][j]);
+    cut[i][j] = mix_distance(cut[i][i], cut[j][j]);
+  }
+
+  if (i == j) {
+    lj1[i][j] = 12.0 * epsilon[i][j] * pow(sigma[i][j], 12.0);
+    lj2[i][j] = 0.0;
+    lj3[i][j] = epsilon[i][j] * pow(sigma[i][j], 12.0);
+    lj4[i][j] = 0.0;
+  } else {
+    lj1[i][j] = 48.0 * epsilon[i][j] * pow(sigma[i][j], 12.0);
+    lj2[i][j] = 24.0 * epsilon[i][j] * pow(sigma[i][j], 6.0);
+    lj3[i][j] = 4.0 * epsilon[i][j] * pow(sigma[i][j], 12.0);
+    lj4[i][j] = 4.0 * epsilon[i][j] * pow(sigma[i][j], 6.0);
+  }
+
+  A0 = sigma[i][j];
+  C0 = epsilon[i][j];
+  B0 = C0 / (A0 * A0 * A0);
+
+  if (i == j) {
+    A[i][j] = (15.0 / 13.0) * g * A0;
+    B[i][j] = (-169.0 / g15) * B0;
+    C[i][j] = (-5.0 / (13.0 * g12)) * C0;
+  } else {
+    A[i][j] = 3.0 * ((3.0 * g6 - 10.0) / (7.0 * g6 - 26.0)) * g * A0;
+    B[i][j] = (2.0 / g15) * ((7.0 * g6 - 26.0) * (7.0 * g6 - 26.0) / (g6 - 2.0)) * B0;
+    C[i][j] = (4.0 / g12) * ((3.0 * g6 - 2.0) * (g6 - 5.0) / (7.0 * g6 - 26.0)) * C0;
+  }
+
+  cut[i][j] = A[i][j];
+  Asq[i][j] = A[i][j] * A[i][j];
+  rc[i][j] = g * sigma[i][j];
+  rcsq[i][j] = rc[i][j] * rc[i][j];
+
+  lj1[j][i] = lj1[i][j];
+  lj2[j][i] = lj2[i][j];
+  lj3[j][i] = lj3[i][j];
+  lj4[j][i] = lj4[i][j];
+
+  A[j][i] = A[i][j];
+  Asq[j][i] = Asq[i][j];
+  B[j][i] = B[i][j];
+  C[j][i] = C[i][j];
+  rc[j][i] = rc[i][j];
+  rcsq[j][i] = rcsq[i][j];
+
+  return cut[i][j];
+}
+#+end_src
+
+** Force/Potential Calculation
+
+*** Two Particle Interaction
+
+Generally to Plot Force/Potential as a function of $r$.
+
+#+begin_src c
+double PairNTW::single(int /*i*/, int /*j*/, int itype, int jtype, double rsq,
+                       double /*factor_coul*/, double factor_lj, double &fforce)
+{
+  double r, rinv, r2inv, r6inv, forcelj, philj;
+
+  r = sqrt(rsq);
+  rinv = 1.0 / r;
+  r2inv = 1.0 / rsq;
+  r6inv = r2inv * r2inv * r2inv;
+
+  if (rsq < rcsq[itype][jtype]) {
+    forcelj = r6inv * (lj1[itype][jtype] * r6inv - lj2[itype][jtype]);
+    fforce = factor_lj * forcelj * r2inv;
+    philj = r6inv * (lj3[itype][jtype] * r6inv - lj4[itype][jtype]) + C[itype][jtype];
+  } else if (rsq < Asq[itype][jtype]) {
+    forcelj = -3.0 * B[itype][jtype] * pow(r - A[itype][jtype], 2.0);
+    fforce = factor_lj * forcelj * rinv;
+    philj = B[itype][jtype] * pow(r - A[itype][jtype], 3.0);
+  } else {
+    forcelj = 0.0;
+    philj = 0.0;
+  }
+  return factor_lj * philj;
+}
+#+end_src
+
+*** $N$ Particle Calculation
+
+#+begin_src c
+void PairNTW::compute(int eflag, int vflag)
+{
+  int i, j, ii, jj, inum, jnum, itype, jtype;
+  double xtmp, ytmp, ztmp, delx, dely, delz, evdwl, fpair;
+  double r, rinv, rsq, r2inv, r6inv, forcelj, factor_lj;
+  int *ilist, *jlist, *numneigh, **firstneigh;
+
+  evdwl = 0.0;
+  ev_init(eflag, vflag);
+
+  double **x = atom->x;
+  double **f = atom->f;
+  int *type = atom->type;
+  int nlocal = atom->nlocal;
+  double *special_lj = force->special_lj;
+  int newton_pair = force->newton_pair;
+
+  inum = list->inum;
+  ilist = list->ilist;
+  numneigh = list->numneigh;
+  firstneigh = list->firstneigh;
+
+  // loop over neighbors of my atoms
+  for (ii = 0; ii < inum; ii++) {
+    i = ilist[ii];
+    xtmp = x[i][0];
+    ytmp = x[i][1];
+    ztmp = x[i][2];
+    itype = type[i];
+    jlist = firstneigh[i];
+    jnum = numneigh[i];
+
+    for (jj = 0; jj < jnum; jj++) {
+      j = jlist[jj];
+      factor_lj = special_lj[sbmask(j)];
+      j &= NEIGHMASK;
+
+      delx = xtmp - x[j][0];
+      dely = ytmp - x[j][1];
+      delz = ztmp - x[j][2];
+      rsq = delx * delx + dely * dely + delz * delz;
+      jtype = type[j];
+
+      if (rsq < Asq[itype][jtype]) {
+        r = sqrt(rsq);
+        rinv = 1 / r;
+        r2inv = 1.0 / rsq;
+        r6inv = r2inv * r2inv * r2inv;
+
+        if (rsq < rcsq[itype][jtype]) {
+          forcelj = r6inv * (lj1[itype][jtype] * r6inv - lj2[itype][jtype]);
+          fpair = factor_lj * forcelj * r2inv;
+        } else {
+          forcelj = -3.0 * B[itype][jtype] * pow(r - A[itype][jtype], 2.0);
+          fpair = factor_lj * forcelj * rinv;
+        }
+
+        f[i][0] += delx * fpair;
+        f[i][1] += dely * fpair;
+        f[i][2] += delz * fpair;
+        if (newton_pair || j < nlocal) {
+          f[j][0] -= delx * fpair;
+          f[j][1] -= dely * fpair;
+          f[j][2] -= delz * fpair;
+        }
+
+        if (eflag) {
+          if (rsq < rcsq[itype][jtype]) {
+            evdwl = r6inv * (lj3[itype][jtype] * r6inv - lj4[itype][jtype]) + C[itype][jtype];
+            evdwl *= factor_lj;
+          } else {
+            evdwl = B[itype][jtype] * pow(r - A[itype][jtype], 3.0);
+            evdwl *= factor_lj;
+          }
+        }
+
+        if (evflag) ev_tally(i, j, nlocal, newton_pair, evdwl, 0.0, fpair, delx, dely, delz);
+      }
+    }
+  }
+
+  if (vflag_fdotr) virial_fdotr_compute();
+}
+#+end_src
+
+** Makefile
+
+=$LAMMPS_SRC_DIR/src/Makefile.list=
+
+#+begin_src makefile :results no
+# ....
+
+SRC = xyz.cpp ... pair_ntw.cpp
+INC = xyz.h ..... pair_ntw.h
+
+# ....
+#+end_src
+
+** Compilation & Running
+
+- Without MPI Support
+
+#+begin_src sh
+cd $LAMMPS_SRC_DIR/src
+make yes-EXTRA-COMPUTE
+make -j num_threads
+#+end_src
+
+#+begin_src sh
+./$LAMMPS_SRC_DIR/src/lmp -in input_file ...
+#+end_src
+
+- With MPI Support
+
+#+begin_src sh
+cd $LAMMPS_SRC_DIR/src
+make yes-EXTRA-COMPUTE
+make mpi -j num_threads
+#+end_src
+
+#+begin_src sh
+mpirun ./$LAMMPS_SRC_DIR/src/lmp_mpi -np num_procs -in input_file ...
+#+end_src
+
+** Plot of Potential and Force
+
+#+begin_export latex
+\begin{center}
+\resizebox{\textwidth}{!}{\input{code/runs/lammps-pair-style-ntw/all-potentials.pgf}}
+\end{center}
+#+end_export
+
+#+begin_export latex
+\begin{center}
+\resizebox{\textwidth}{!}{\input{code/runs/lammps-pair-style-ntw/all-force.pgf}}
+\end{center}
+#+end_export

@@ -1,0 +1,62 @@
+read_dump ${global_data_path}/initial_states/nve_${initial_num_atoms}.dat 0 x y z vx vy vz
+
+#### ----- Changable
+variable T_damp           equal 0.02
+variable dt               equal 0.002
+variable final_T          equal 0.28
+variable cool_interval    equal 0.07142857
+variable tol_T            equal 0.00001
+variable num_cool_steps   equal 10
+variable thermalize_steps equal 30000
+variable quench_steps     equal 10
+variable num_chains       equal 1
+####
+
+
+variable data_path string ${data_root_path}/N_${initial_num_atoms}_T_${final_T}
+shell mkdir ${data_path}
+
+include ${script_path}/compute.lmp
+
+thermo_style custom step temp f_dump_temperature pe f_dump_ke[2] ke f_dump_ke[1] etotal press
+thermo 1000
+
+fix start_eq all nve
+timestep ${dt}
+run 1
+unfix start_eq
+
+variable final_tol_T equal ${final_T}+${tol_T}
+variable start_T   equal c_calc_temperature
+variable from        equal ${final_T}+${cool_interval}
+variable cool_step equal ${cool_interval}/${num_cool_steps}
+
+### LINEAR STEP COOLING ###
+fix thermalize_1 all nvt temp ${start_T} ${from} ${T_damp} tchain ${num_chains}
+timestep ${dt}
+run 1000
+unfix thermalize_1
+
+label cool_loop
+variable to   equal ${from}-${cool_step}
+
+fix quench_loop all nvt temp ${from} ${to} ${T_damp} tchain ${num_chains}
+timestep ${dt}
+run ${quench_steps}
+unfix quench_loop
+
+fix thermalize_loop all nvt temp ${to} ${to} ${T_damp} tchain ${num_chains}
+timestep ${dt}
+run ${thermalize_steps}
+unfix thermalize_loop
+
+variable from equal ${to}
+
+if "${to} > ${final_tol_T}" then "jump ${script_path}/simulation.lmp cool_loop"
+
+dump save all custom 1 ${global_data_path}/initial_states/quench_${final_T}_${initial_num_atoms}.dat id type x y z vx vy vz
+
+fix thermalize_final all nvt temp ${to} ${to} ${T_damp} tchain ${num_chains}
+timestep ${dt}
+run 1
+unfix thermalize_final

@@ -1,0 +1,25 @@
+labelmap atom 1 Si
+labelmap atom 2 O
+
+mass Si 1.00
+mass O  0.57
+
+pair_style table linear 1000
+
+variable SiSi_pot string ${global_data_path}/ntw_table/SiSi.txt
+variable SiO_pot string  ${global_data_path}/ntw_table/SiO.txt
+variable OO_pot string   ${global_data_path}/ntw_table/OO.txt
+
+pair_coeff Si Si ${SiSi_pot} NTW
+pair_coeff Si O  ${SiO_pot} NTW
+pair_coeff O Si  ${SiO_pot} NTW
+pair_coeff O  O  ${OO_pot} NTW
+
+variable frac_Si equal 0.33
+variable frac_O  equal 0.67
+
+variable n_Si equal round(${frac_Si}*${initial_num_atoms})
+variable n_O  equal round(${frac_O}*${initial_num_atoms})
+
+create_atoms 1 random ${n_Si} 341341 simulation_box
+create_atoms 2 random ${n_O}  127569 simulation_box

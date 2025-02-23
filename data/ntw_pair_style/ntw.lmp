@@ -1,0 +1,35 @@
+labelmap atom 1 Si
+labelmap atom 2 O
+
+variable mass_Si equal 1.00
+variable mass_O equal 0.57
+
+mass Si 1.00
+mass O  0.57
+
+pair_style ntw ${ntw_gamma} ${cut}
+
+variable eps11 equal 1.0
+variable eps12 equal 6.0
+variable eps22 equal 1.0
+
+variable sig11 equal 1.00
+variable sig12 equal 0.49
+variable sig22 equal 0.85
+
+#variable rc11 equal ${ntw_gamma}*${sig11}
+#variable rc12 equal ${ntw_gamma}*${sig12}
+#variable rc22 equal ${ntw_gamma}*${sig22}
+
+pair_coeff Si Si 1.0 1.00
+pair_coeff Si O  6.0 0.49
+pair_coeff O  O  1.0 0.85
+
+variable frac_Si equal 0.33
+variable frac_O  equal 0.67
+
+variable n_Si equal round(${frac_Si}*${initial_num_atoms})
+variable n_O  equal round(${frac_O}*${initial_num_atoms})
+
+create_atoms 1 random ${n_Si} 341341 simulation_box
+create_atoms 2 random ${n_O}  127569 simulation_box

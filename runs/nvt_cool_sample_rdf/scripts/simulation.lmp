@@ -1,0 +1,14 @@
+read_dump ${global_data_path}/initial_states/quench_${temperature}_${initial_num_atoms}.dat 0 x y z vx vy vz
+
+variable data_path string ${data_root_path}/N_${initial_num_atoms}_T_${final_T}
+shell mkdir ${data_path}
+include ${script_path}/compute.lmp
+
+thermo_style custom step temp pe ke etotal press
+thermo 1000
+
+fix thermalize all nvt temp 0.28 0.28 0.01 tchain 1
+
+timestep ${dt}
+run 11000
+unfix thermalize

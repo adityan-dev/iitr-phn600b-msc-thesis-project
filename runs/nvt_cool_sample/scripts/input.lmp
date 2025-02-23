@@ -1,0 +1,19 @@
+############ CREATE LOG FILE ############
+log ${simulation_path}/log.txt
+
+############ INITIALIZATION PARAMETERS ############
+include ${script_path}/init.lmp
+
+############ CREATE CUBIC SIMULATION BOX ############
+variable box       equal (${initial_num_atoms}/${initial_density})^(1.0/3.0)
+variable box_end   equal 0.5*${box}
+variable box_start equal -0.5*${box}
+
+region          simulation_box block ${box_start} ${box_end} ${box_start} ${box_end} ${box_start} ${box_end}
+create_box      ${num_atom_types} simulation_box
+
+############ INITIALIZE INTERACTIONS ############
+include ${script_path}/interaction.lmp
+
+############ RUN SIMULATION ############
+include ${script_path}/simulation.lmp

@@ -1,0 +1,113 @@
+#+title: NTW Model Checks for Silica
+#+author: Adityan S
+
+#+LATEX_CLASS_OPTIONS: [a4paper,11pt,twoside]
+#+LATEX_HEADER: \usepackage{booktabs}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage{colortbl}
+#+LATEX_HEADER: \usepackage{siunitx}
+#+LATEX_HEADER: \usepackage{tabu}
+#+LATEX_HEADER: \usepackage{etoolbox}
+#+LATEX_HEADER: \usepackage{pdflscape}
+#+LATEX_HEADER: \usepackage{pgfplots}
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usepackage{nopageno}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER:\usepackage{algorithm}
+#+LATEX_HEADER:\usepackage{algpseudocode}
+#+LATEX_HEADER: \usepackage[margin=0.5in]{geometry}
+
+#+options: tex:t toc:t date:nil
+#+startup: latexpreview
+#+startup: inlineimages
+
+* NVE Checks
+** Parameters
+  \begin{align*}
+        & \mathrm{Temperature} & T^*_{i} = 0.28  \implies T_i = 1960K  \\
+        & \mathrm{Density} & \rho^* = 1.655 \implies \rho = 4.475\mathrm{ g/cm^{3}} \\
+        & \mathrm{Pressure} & P^* = 2.37 \times 10^{-6} \implies P = 1 \mathrm{\text{ atm}} \\
+        & \mathrm{\text{Number of Atoms}} & N = 501 \\
+        & & N_{Si} = N_1 = 188 \\
+        & & N_{O }= N_2 = 376
+  \end{align*}
+** Energy
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nve_lammps_pair_style/plots/energy.png]]
+
+** Temperature and Velocity Distribution
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nve_lammps_pair_style/plots/temperature.png]]
+
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nve_lammps_pair_style/plots/velocity_dist.png]]
+
+** Pressure
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nve_lammps_pair_style/plots/pressure.png]]
+
+** Ensemble Momentum and COM Velocity
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nve_lammps_pair_style/plots/com_velocity.png]]
+
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nve_lammps_pair_style/plots/momentum.png]]
+
+* Cooling Checks
+** Parameters
+- Initial NVE Temperature \(T_{NVE}\)
+- Thermalize (Nose-Hover) to \(T_f + 500K = T^*_f + 0.07\)
+- Cooling to \(T_f\) in steps. Each cooling step involves rapid cooling for \(n_c\), followed by thermalization (Nose-Hover) for \(n_t\)
+
+** \(T^*_f = 0.28, \quad N = 501\)
+*** Energy
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/ke.png]]
+
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/pe.png]]
+
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/te.png]]
+*** Temperature
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/temperature.png]]
+*** Pressure
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/pressure.png]]
+*** Average NVT Temperature vs KE
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/TvsKE.png]]
+
+\begin{align*}
+KE = \alpha T ^ m, \quad m = 0.99, \quad \alpha = 749.99
+\end{align*}
+* NVT Checks
+** Coslovich and Pastore RDF Check \(T^*_f = 0.28, \quad N = 501, \quad \rho = 1.655\)
+*** \(g_{11}(r)\)
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nvt_cool_sample_rdf/plots/rdf_11.png]]
+
+*** \(g_{12}(r)\)
+
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nvt_cool_sample_rdf/plots/rdf_12.png]]
+*** \(g_{22}(r)\)
+
+#+ATTR_ORG: :align center :width 1000px
+[[../../runs/nvt_cool_sample_rdf/plots/rdf_22.png]]
+
+*** Density Check
+**** \(N = 501, \quad \rho = 1.655\)
+
+\begin{align*}
+z_{}(R = 4.22113) = 522.054 \\
+R_0 = 4.22113 \implies \frac{4}{3}\pi R_0^3 = 315.047 \\
+N_{sim} = 501, \quad \rho = 1.655 \\
+\implies L = 6.71449326567 \implies L^3 = 302.718 \\
+\end{align*}
+
+\begin{align*}
+\rho = \frac{N + 1}{L^3} = \frac{z(R_0)}{\frac{4}{3}\pi R_0^3} = 1.657 \\
+\implies N + 1 = 501.7 \implies N = 500.7 \approx 501
+\end{align*}

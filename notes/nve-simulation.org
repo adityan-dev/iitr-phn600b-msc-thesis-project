@@ -1,0 +1,58 @@
+#+title: NVE Simulation
+#+AUTHOR: Adityan S
+
+#+LATEX_CLASS_OPTIONS: [a4paper,11pt,twoside]
+#+LATEX_HEADER: \usepackage{booktabs}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage{colortbl}
+#+LATEX_HEADER: \usepackage{siunitx}
+#+LATEX_HEADER: \usepackage{tabu}
+#+LATEX_HEADER: \usepackage{etoolbox}
+#+LATEX_HEADER: \usepackage{pdflscape}
+#+LATEX_HEADER: \usepackage{pgfplots}
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usepackage{nopageno}
+#+LATEX_HEADER: \usepackage{amssymb}
+#+LATEX_HEADER:\usepackage{algorithm}
+#+LATEX_HEADER:\usepackage{algpseudocode}
+#+LATEX_HEADER: \usepackage[margin=0.5in]{geometry}
+
+#+options: tex:t toc:t date:nil
+#+startup: latexpreview
+#+startup: inlineimages
+
+* Standard NVE Simulation
+** Initial state of the simulation
+
+  \begin{align*}
+        & \mathrm{Temperature} & T^* = 1  \implies T = 7000K  \\
+        & \mathrm{Density} & \rho^* = 1.655 \implies \rho = 1 \\
+        & \mathrm{Pressure} & P^* = 2.37 \times 10^{-6} \implies P = 1 \mathrm{\text{ atm}} \\
+        & \mathrm{\text{Number of Atoms}} & N = 564 \\
+        & & N_{Si} = N_1 = 188 \\
+        & & N_{O }= N_2 = 376 \\
+        & \mathrm{}
+  \end{align*}
+
+** Ensemble Quantities
+*** Temperature
+*** Pressure
+*** Energy
+*** RDF
+*** ADF
+*** COM Velocity, Distribution
+*** Momentum, Angular Momentum
+** Quantifty Atom's Structural Stability
+
+- Mean Squared Displacement at \(N^{th}\) Step
+
+  \begin{align*}
+        \mathrm{MSD}_{N} = \sigma^2_N &= \frac{1}{N} \sum^N_{i = 1} (x_i - x_0)^2 = \frac{1}{N} \sum^N_{i = 1} X_i^2 \\
+        X^2_{N+1} - X^2_N &= \sigma^2_{N+1} - \frac{2N+1}{N+1} \sigma^2_{N}  + \frac{N-1}{N}  \sigma^2_{N-1} \\
+  \end{align*}
+Hence an estimate of Structural Stability is given by,
+
+  \begin{align*}
+        \Delta_{xN} = \frac{X^2_{N+1} - X^2_N}{2} &= (x_{N+1}-x_N) \Big(  \frac{x_{N+1}+x_N}{2} - x_0 \Big) \\
+        \implies \lim_{x_{N+1} - x_N \to 0}\Delta_{xN} &= \lim_{h \to 0} hX_N = 0
+\end{align*}

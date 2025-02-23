@@ -1,0 +1,8 @@
+variable dt equal 0.001
+variable num_atom_types      equal 2
+variable initial_num_atoms   equal 1200
+variable initial_density     equal 1.655
+variable initial_temperature equal 0.28
+variable initial_pressure    equal 2.37*10^(-6)
+
+variable dt equal 0.0001

@@ -1,0 +1,21 @@
+#+title: Rdf Calc
+
+
+\begin{align*}
+z(R) = \int_0^{R} g(R)4\pi R^2dR
+\end{align*}
+
+\begin{align*}
+z_{11}(R = 4.22113) = 171.491 \\
+z_{12}(R = 4.22113) = 350.311 \\
+z_{22}(R = 4.2113) = 349.629 \\
+z_{}(R = 4.22113) = 522.048 \\
+R_0 = 4.22113 \implies \frac{4}{3}\pi R_0^3 = 315.047 \\
+L = 8.98382 \implies L^3 = 725.0753 \\
+N_{sim} = 1200
+\end{align*}
+
+\begin{align*}
+\rho = \frac{N - 1}{L^3} = \frac{z(R_0)}{\frac{4}{3}\pi R_0^3} \\
+\implies N - 1 = 1201.484 \implies N = 1200.484
+\end{align*}

@@ -1,0 +1,9 @@
+#+title: 20 01 2025
+
+* Momentum Conservation. Check if noise or other factors.
+* Implement Tabular Potential in Lammps, Compare quantities with formula potential. (4 plots)
+* Value of COM Velocity. Why large?
+* Check the values of Energy, Temperature using velocity Distribution
+* Range of Calculation for Partial Pair Correlation Functions, Read through Kurt Binder, Walter Kob Glassy (Section 2.1)
+* Read Model and Simulation details in Ozawa Paper and compare with the implementation.
+* Reproduce the Paper Results g(r).

@@ -1,5 +1,5 @@
 %& /home/adi/.config/emacs/.local/cache/org/persist/2e/543a70-8c42-4823-a991-bb8bb3325e32-6794375529a5c50db9caf3bdeb15d0a4
-% Created 2025-02-19 Wed 11:21
+% Created 2025-02-25 Tue 07:06
 % Intended LaTeX compiler: pdflatex
 \documentclass[a4paper,11pt,twoside]{article}
 \usepackage[utf8]{inputenc}
@@ -54,9 +54,9 @@
 \tableofcontents
 
 \section{NVE Checks}
-\label{sec:org73b2f4f}
+\label{sec:orga129dc3}
 \subsection{Parameters}
-\label{sec:org5bbc8c0}
+\label{sec:org7ea07d7}
 \begin{align*}
       & \mathrm{Temperature} & T^*_{i} = 0.28  \implies T_i = 1960K  \\
       & \mathrm{Density} & \rho^* = 1.655 \implies \rho = 4.475\mathrm{ g/cm^{3}} \\
@@ -66,12 +66,12 @@
       & & N_{O }= N_2 = 376
 \end{align*}
 \subsection{Energy}
-\label{sec:orgbc66be2}
+\label{sec:org7858087}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../../runs/nve_lammps_pair_style/plots/energy.png}
 \end{center}
 \subsection{Temperature and Velocity Distribution}
-\label{sec:org3349f3e}
+\label{sec:org70936e0}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../../runs/nve_lammps_pair_style/plots/temperature.png}
 \end{center}
@@ -80,12 +80,12 @@
 \includegraphics[width=.9\linewidth]{../../runs/nve_lammps_pair_style/plots/velocity_dist.png}
 \end{center}
 \subsection{Pressure}
-\label{sec:org568d20d}
+\label{sec:org32ceaa4}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../../runs/nve_lammps_pair_style/plots/pressure.png}
 \end{center}
 \subsection{Ensemble Momentum and COM Velocity}
-\label{sec:org693b4ab}
+\label{sec:orga91f9fb}
 \begin{center}
 \includegraphics[width=.9\linewidth]{../../runs/nve_lammps_pair_style/plots/com_velocity.png}
 \end{center}
@@ -94,84 +94,90 @@
 \includegraphics[width=.9\linewidth]{../../runs/nve_lammps_pair_style/plots/momentum.png}
 \end{center}
 \section{Cooling Checks}
-\label{sec:orge757012}
+\label{sec:org13ad751}
 \subsection{Parameters}
-\label{sec:org767175a}
+\label{sec:org8b8a1c2}
 \begin{itemize}
 \item Initial NVE Temperature \(T_{NVE}\)
 \item Thermalize (Nose-Hover) to \(T_f + 500K = T^*_f + 0.07\)
 \item Cooling to \(T_f\) in steps. Each cooling step involves rapid cooling for \(n_c\), followed by thermalization (Nose-Hover) for \(n_t\)
 \end{itemize}
-\subsection{\(T^*_f = 0.28, \quad N = 501\)}
-\label{sec:org97cb660}
+
+\begin{align*}
+n_c = 10\Delta t \\
+n_t = 30000\Delta t \\
+N_{cool step} = 1000
+\end{align*}
+\subsection{\(T^*_f = 0.39, \quad N = 501\)}
+\label{sec:orgf036cd5}
 \subsubsection{Energy}
-\label{sec:org4a016e6}
+\label{sec:orga3d3361}
 \begin{center}
-\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.28/ke.png}
+\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.39/ke.png}
 \end{center}
 
 \begin{center}
-\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.28/pe.png}
+\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.39/pe.png}
 \end{center}
 
 \begin{center}
-\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.28/te.png}
+\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.39/te.png}
 \end{center}
 \subsubsection{Temperature}
-\label{sec:org0052518}
+\label{sec:orgd76d484}
 \begin{center}
-\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.28/temperature.png}
+\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.39/temperature.png}
 \end{center}
 \subsubsection{Pressure}
-\label{sec:org8a5d188}
+\label{sec:org3d2bc5e}
 \begin{center}
-\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.28/pressure.png}
+\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.39/pressure.png}
 \end{center}
 \subsubsection{Average NVT Temperature vs KE}
-\label{sec:org4d65822}
+\label{sec:org117ca23}
 \begin{center}
-\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.28/TvsKE.png}
+\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample/plots/N_501_T_0.39/TvsKE.png}
 \end{center}
 
 \begin{align*}
-KE = \alpha T ^ m, \quad m = 0.99, \quad \alpha = 749.99
+KE = \alpha T ^ m, \quad m = 1, \quad \alpha = 750
 \end{align*}
 \section{NVT Checks}
-\label{sec:org49fe76d}
-\subsection{Coslovich and Pastore RDF Check \(T^*_f = 0.28, \quad N = 501, \quad \rho = 1.655\)}
-\label{sec:org79c8fba}
+\label{sec:org71676f0}
+\subsection{Coslovich and Pastore RDF Check \(T^*_f = 0.39, \quad N = 501, \quad \rho = 1.655\)}
+\label{sec:orgc454348}
 \subsubsection{\(g_{11}(r)\)}
-\label{sec:orgcbb079f}
+\label{sec:orgccd783d}
 \begin{center}
-\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample_rdf/plots/rdf_11.png}
+\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample_rdf/plots/N_501_T_0.39/rdf_11.png}
 \end{center}
 \subsubsection{\(g_{12}(r)\)}
-\label{sec:org0c784f7}
+\label{sec:org68b981a}
 
 \begin{center}
-\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample_rdf/plots/rdf_12.png}
+\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample_rdf/plots/N_501_T_0.39/rdf_12.png}
 \end{center}
 \subsubsection{\(g_{22}(r)\)}
-\label{sec:orgb4307b8}
+\label{sec:orgd36fe60}
 
 \begin{center}
-\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample_rdf/plots/rdf_22.png}
+\includegraphics[width=.9\linewidth]{../../runs/nvt_cool_sample_rdf/plots/N_501_T_0.39/rdf_22.png}
 \end{center}
 \subsubsection{Density Check}
-\label{sec:org61e2e94}
+\label{sec:orgb7e12f9}
 \begin{enumerate}
 \item \(N = 501, \quad \rho = 1.655\)
-\label{sec:orgbb879d4}
+\label{sec:orgc5d6d0e}
 
 \begin{align*}
-z_{}(R = 4.22113) = 522.054 \\
+z_{}(R = 4.22113) = 521.951 \\
 R_0 = 4.22113 \implies \frac{4}{3}\pi R_0^3 = 315.047 \\
 N_{sim} = 501, \quad \rho = 1.655 \\
 \implies L = 6.71449326567 \implies L^3 = 302.718 \\
 \end{align*}
 
 \begin{align*}
-\rho = \frac{N + 1}{L^3} = \frac{z(R_0)}{\frac{4}{3}\pi R_0^3} = 1.657 \\
+\rho = \frac{N + 1}{L^3} = \frac{z(R_0)}{\frac{4}{3}\pi R_0^3} = 1.6567 \\
 \implies N + 1 = 501.7 \implies N = 500.7 \approx 501
 \end{align*}
 \end{enumerate}

@@ -6,10 +6,8 @@ variable dt equal 0.0005
 variable num_atom_types      equal 2
 variable initial_num_atoms   equal 501
 variable initial_density     equal 1.655
-variable initial_temperature equal 0.28
-variable final_temperature   equal 0.28
+variable temperature equal   0.39
 variable initial_pressure    equal 2.37*10^(-6)
-
 
 ############ CREATE CUBIC SIMULATION BOX ############
 variable box       equal (${initial_num_atoms}/${initial_density})^(1.0/3.0)
@@ -32,15 +30,6 @@ create_box      2 simulation_box
 Created orthogonal box = (-3.3572466 -3.3572466 -3.3572466) to (3.3572466 3.3572466 3.3572466)
   2 by 2 by 2 MPI processor grid
 
-############ PRINT INITIAL CONFIGURATION ############
-print "Initial Num Atoms = ${initial_num_atoms}"
-Initial Num Atoms = 501
-print "Initial Density = ${initial_density}"
-Initial Density = 1.655
-print "Initial Pressure = ${initial_pressure}"
-Initial Pressure = 2.37e-06
-print "Initial Temperature = ${initial_temperature}"
-Initial Temperature = 0.28
 print "Initial Cubic Box Length = ${box}"
 Initial Cubic Box Length = 6.71449326567
 
@@ -106,9 +95,10 @@ Created 336 atoms
 ############ RUN SIMULATION ############
 include ${script_path}/simulation.lmp
 include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/scripts/simulation.lmp
-read_dump ${global_data_path}/initial_states/quench_0.28_${initial_num_atoms}.dat 0 x y z vx vy vz
-read_dump /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../data/initial_states/quench_0.28_${initial_num_atoms}.dat 0 x y z vx vy vz
-read_dump /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../data/initial_states/quench_0.28_501.dat 0 x y z vx vy vz
+read_dump ${global_data_path}/initial_states/quench_${temperature}_${initial_num_atoms}.dat 0 x y z vx vy vz
+read_dump /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../data/initial_states/quench_${temperature}_${initial_num_atoms}.dat 0 x y z vx vy vz
+read_dump /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../data/initial_states/quench_0.39_${initial_num_atoms}.dat 0 x y z vx vy vz
+read_dump /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../data/initial_states/quench_0.39_501.dat 0 x y z vx vy vz
 Scanning dump file ...
 Reading snapshot from dump file ...
   orthogonal box = (-3.3572466 -3.3572466 -3.3572466) to (3.3572466 3.3572466 3.3572466)
@@ -119,6 +109,15 @@ Reading snapshot from dump file ...
   0 atoms trimmed
   0 atoms added
   501 atoms after read
+
+variable rdf_steps equal 100000
+
+variable data_path string ${data_root_path}/N_${initial_num_atoms}_T_${temperature}
+variable data_path string /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_${initial_num_atoms}_T_${temperature}
+variable data_path string /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_${temperature}
+variable data_path string /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_0.39
+shell mkdir ${data_path}
+shell mkdir /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_0.39
 include ${script_path}/compute.lmp
 include /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/scripts/compute.lmp
 variable global_exp_stride               equal 100
@@ -174,9 +173,11 @@ variable velocity_dist_exp_avg_stride     equal 1 #${global_exp_avg_stride}
 variable velocity_dist_exp_avg_num        equal 1  #${global_exp_avg_num}
 
 variable rdf_calcp              equal 1
-variable rdf_exp_stride         equal 20000 # 420000
+variable rdf_exp_stride         equal ${rdf_steps} # 420000
+variable rdf_exp_stride         equal 100000 
 variable rdf_exp_avg_stride     equal 1
-variable rdf_exp_avg_num        equal 20000
+variable rdf_exp_avg_num        equal ${rdf_steps}
+variable rdf_exp_avg_num        equal 100000
 variable rdf_bins               equal 1000
 variable rdf_cutoff_11          equal ${cut}
 variable rdf_cutoff_11          equal 4.22535211267606
@@ -202,8 +203,6 @@ variable adf_outer_cutoff_222   equal 3 #${cut}
 ###################################################
 ############ DO NOT MODIFY ########################
 ###################################################
-variable data_path string ${data_root_path}
-variable data_path string /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data
 compute type_chunk all chunk/atom type
 
 if "${rdf_calcp} == 1"  then    "compute calc_rdf_all all rdf ${rdf_bins}"    "compute calc_rdf_11 all rdf ${rdf_bins} 1 1"    "compute calc_rdf_12 all rdf ${rdf_bins} 1 2"    "compute calc_rdf_22 all rdf ${rdf_bins} 2 2"    "fix dump_rdf_all all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector"    "fix dump_rdf_11 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector"    "fix dump_rdf_12 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector"    "fix dump_rdf_22 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector"
@@ -217,24 +216,24 @@ compute calc_rdf_22 all rdf ${rdf_bins} 2 2
 compute calc_rdf_22 all rdf 1000 2 2
 fix dump_rdf_all all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector
 fix dump_rdf_all all ave/time 1 ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector
-fix dump_rdf_all all ave/time 1 20000 ${rdf_exp_stride}         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector
-fix dump_rdf_all all ave/time 1 20000 20000         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector
-fix dump_rdf_all all ave/time 1 20000 20000         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/rdf_all.dat mode vector
+fix dump_rdf_all all ave/time 1 100000 ${rdf_exp_stride}         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector
+fix dump_rdf_all all ave/time 1 100000 100000         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file ${data_path}/rdf_all.dat mode vector
+fix dump_rdf_all all ave/time 1 100000 100000         c_calc_rdf_all[1]  c_calc_rdf_all[2]  c_calc_rdf_all[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_0.39/rdf_all.dat mode vector
 fix dump_rdf_11 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector
 fix dump_rdf_11 all ave/time 1 ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector
-fix dump_rdf_11 all ave/time 1 20000 ${rdf_exp_stride}         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector
-fix dump_rdf_11 all ave/time 1 20000 20000         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector
-fix dump_rdf_11 all ave/time 1 20000 20000         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/rdf_11.dat mode vector
+fix dump_rdf_11 all ave/time 1 100000 ${rdf_exp_stride}         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector
+fix dump_rdf_11 all ave/time 1 100000 100000         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file ${data_path}/rdf_11.dat mode vector
+fix dump_rdf_11 all ave/time 1 100000 100000         c_calc_rdf_11[1]  c_calc_rdf_11[2]  c_calc_rdf_11[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_0.39/rdf_11.dat mode vector
 fix dump_rdf_12 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector
 fix dump_rdf_12 all ave/time 1 ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector
-fix dump_rdf_12 all ave/time 1 20000 ${rdf_exp_stride}         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector
-fix dump_rdf_12 all ave/time 1 20000 20000         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector
-fix dump_rdf_12 all ave/time 1 20000 20000         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/rdf_12.dat mode vector
+fix dump_rdf_12 all ave/time 1 100000 ${rdf_exp_stride}         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector
+fix dump_rdf_12 all ave/time 1 100000 100000         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file ${data_path}/rdf_12.dat mode vector
+fix dump_rdf_12 all ave/time 1 100000 100000         c_calc_rdf_12[1] c_calc_rdf_12[2] c_calc_rdf_12[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_0.39/rdf_12.dat mode vector
 fix dump_rdf_22 all ave/time ${rdf_exp_avg_stride} ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector
 fix dump_rdf_22 all ave/time 1 ${rdf_exp_avg_num} ${rdf_exp_stride}         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector
-fix dump_rdf_22 all ave/time 1 20000 ${rdf_exp_stride}         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector
-fix dump_rdf_22 all ave/time 1 20000 20000         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector
-fix dump_rdf_22 all ave/time 1 20000 20000         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/rdf_22.dat mode vector
+fix dump_rdf_22 all ave/time 1 100000 ${rdf_exp_stride}         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector
+fix dump_rdf_22 all ave/time 1 100000 100000         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file ${data_path}/rdf_22.dat mode vector
+fix dump_rdf_22 all ave/time 1 100000 100000         c_calc_rdf_22[1] c_calc_rdf_22[2] c_calc_rdf_22[3] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_0.39/rdf_22.dat mode vector
 
 if "${adf_calcp} == 1" then    "compute calc_adf_all all adf ${adf_bins}"    "compute calc_adf_111 all adf ${adf_bins} 1 1 1  ${adf_inner_cutoff_111} ${adf_outer_cutoff_111} ${adf_inner_cutoff_111} ${adf_outer_cutoff_111} ordinate degree"    "compute calc_adf_121 all adf ${adf_bins} 2 1 1  ${adf_inner_cutoff_121} ${adf_outer_cutoff_121} ${adf_inner_cutoff_121} ${adf_outer_cutoff_121} ordinate degree"    "compute calc_adf_212 all adf ${adf_bins} 1 2 2  ${adf_inner_cutoff_212} ${adf_outer_cutoff_212} ${adf_inner_cutoff_212} ${adf_outer_cutoff_212} ordinate degree"    "compute calc_adf_222 all adf ${adf_bins} 2 2 2  ${adf_inner_cutoff_222} ${adf_outer_cutoff_222} ${adf_inner_cutoff_222} ${adf_outer_cutoff_222} ordinate degree"    "fix dump_adf_all all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride}         c_calc_adf_all[1]  c_calc_adf_all[2]  c_calc_adf_all[3] file ${data_path}/adf_all.dat mode vector"    "fix dump_adf_111 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride}         c_calc_adf_111[1]  c_calc_adf_111[2]  c_calc_adf_111[3] file ${data_path}/adf_111.dat mode vector"    "fix dump_adf_121 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride}         c_calc_adf_121[1]  c_calc_adf_121[2]  c_calc_adf_121[3] file ${data_path}/adf_121.dat mode vector"    "fix dump_adf_212 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride}         c_calc_adf_212[1]  c_calc_adf_212[2]  c_calc_adf_212[3] file ${data_path}/adf_212.dat mode vector"    "fix dump_adf_222 all ave/time ${adf_exp_avg_stride} ${adf_exp_avg_num} ${adf_exp_stride}         c_calc_adf_222[1]  c_calc_adf_222[2]  c_calc_adf_222[3] file ${data_path}/adf_222.dat mode vector"
 
@@ -246,7 +245,7 @@ fix dump_temperature all ave/time ${temperature_exp_avg_stride} ${temperature_ex
 fix dump_temperature all ave/time 1 ${temperature_exp_avg_num} ${temperature_exp_stride}         c_calc_temperature file ${data_path}/temperature.dat
 fix dump_temperature all ave/time 1 1 ${temperature_exp_stride}         c_calc_temperature file ${data_path}/temperature.dat
 fix dump_temperature all ave/time 1 1 100         c_calc_temperature file ${data_path}/temperature.dat
-fix dump_temperature all ave/time 1 1 100         c_calc_temperature file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/temperature.dat
+fix dump_temperature all ave/time 1 1 100         c_calc_temperature file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_0.39/temperature.dat
 
 if "${pressure_calcp} == 1 && ${temperature_calcp} == 1" then    "compute calc_pressure all pressure calc_temperature virial"
 compute calc_pressure all pressure calc_temperature virial
@@ -256,7 +255,7 @@ fix dump_pressure all ave/time ${pressure_exp_avg_stride} ${pressure_exp_avg_num
 fix dump_pressure all ave/time 1 ${pressure_exp_avg_num} ${pressure_exp_stride}         c_calc_pressure file ${data_path}/pressure.dat
 fix dump_pressure all ave/time 1 1 ${pressure_exp_stride}         c_calc_pressure file ${data_path}/pressure.dat
 fix dump_pressure all ave/time 1 1 100         c_calc_pressure file ${data_path}/pressure.dat
-fix dump_pressure all ave/time 1 1 100         c_calc_pressure file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/pressure.dat
+fix dump_pressure all ave/time 1 1 100         c_calc_pressure file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_0.39/pressure.dat
 
 if "${energy_calcp} == 1" then    "compute calc_ke all ke"    "compute calc_pe all pe"    "fix dump_ke all ave/time ${energy_exp_avg_stride} ${energy_exp_avg_num} ${energy_exp_stride}         c_calc_ke c_calc_pe file ${data_path}/energy.dat"
 compute calc_ke all ke
@@ -265,14 +264,14 @@ fix dump_ke all ave/time ${energy_exp_avg_stride} ${energy_exp_avg_num} ${energy
 fix dump_ke all ave/time 1 ${energy_exp_avg_num} ${energy_exp_stride}         c_calc_ke c_calc_pe file ${data_path}/energy.dat
 fix dump_ke all ave/time 1 1 ${energy_exp_stride}         c_calc_ke c_calc_pe file ${data_path}/energy.dat
 fix dump_ke all ave/time 1 1 100         c_calc_ke c_calc_pe file ${data_path}/energy.dat
-fix dump_ke all ave/time 1 1 100         c_calc_ke c_calc_pe file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/energy.dat
+fix dump_ke all ave/time 1 1 100         c_calc_ke c_calc_pe file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_0.39/energy.dat
 if "${momentum_calcp} == 1" then    "compute calc_momentum all momentum"    "fix dump_momentum all ave/time ${momentum_exp_avg_stride} ${momentum_exp_avg_num} ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat"
 compute calc_momentum all momentum
 fix dump_momentum all ave/time ${momentum_exp_avg_stride} ${momentum_exp_avg_num} ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat
 fix dump_momentum all ave/time 1 ${momentum_exp_avg_num} ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat
 fix dump_momentum all ave/time 1 1 ${momentum_exp_stride}         c_calc_momentum[*] file ${data_path}/momentum.dat
 fix dump_momentum all ave/time 1 1 100         c_calc_momentum[*] file ${data_path}/momentum.dat
-fix dump_momentum all ave/time 1 1 100         c_calc_momentum[*] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/momentum.dat
+fix dump_momentum all ave/time 1 1 100         c_calc_momentum[*] file /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_0.39/momentum.dat
 
 if "${velocity_dist_calcp} == 1" then    "compute calc_vel all property/atom vx vy vz"    "fix aveg_velocity_dist all ave/atom ${velocity_dist_exp_avg_stride} ${velocity_dist_exp_avg_num} ${velocity_dist_exp_stride}         c_calc_vel[1] c_calc_vel[2] c_calc_vel[3]"    "dump dump_velocity_dist all custom ${velocity_dist_exp_stride} ${data_path}/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]"
 compute calc_vel all property/atom vx vy vz
@@ -282,19 +281,22 @@ fix aveg_velocity_dist all ave/atom 1 1 ${velocity_dist_exp_stride}         c_ca
 fix aveg_velocity_dist all ave/atom 1 1 10000         c_calc_vel[1] c_calc_vel[2] c_calc_vel[3]
 dump dump_velocity_dist all custom ${velocity_dist_exp_stride} ${data_path}/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]
 dump dump_velocity_dist all custom 10000 ${data_path}/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]
-dump dump_velocity_dist all custom 10000 /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]
+dump dump_velocity_dist all custom 10000 /home/adi/workspace-directory/courses/iitr-phn600b-msc-thesis-project/code/../runs/nvt_cool_sample_rdf/data/N_501_T_0.39/velocity_dist.dat id         f_aveg_velocity_dist[1] f_aveg_velocity_dist[2] f_aveg_velocity_dist[3]
 
 if "${angular_momentum_calcp} == 1" then    "compute calc_angular_momentum all angmom/chunk type_chunk"    "fix dump_angular_momentum all ave/time ${angular_momentum_exp_avg_stride} ${angular_momentum_exp_avg_num} ${angular_momentum_exp_stride}         c_calc_angular_momentum[*] file ${data_path}/angular_momentum.dat mode vector"
 
 thermo_style custom step temp pe ke etotal press
 thermo 1000
 
-fix thermalize all nvt temp 0.28 0.28 0.01 tchain 7
-#fix thermalize all temp/berendsen 0.28 0.28 0.01
-#fix thermalize all nve
+fix thermalize all nvt temp ${temperature} ${temperature} 0.01 tchain 7
+fix thermalize all nvt temp 0.39 ${temperature} 0.01 tchain 7
+fix thermalize all nvt temp 0.39 0.39 0.01 tchain 7
+variable run_steps equal ${rdf_steps}+1000
+variable run_steps equal 100000+1000
 timestep ${dt}
 timestep 0.0005
-run 21000
+run ${run_steps}
+run 101000
 
 CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE-CITE
 
@@ -347,55 +349,135 @@ Neighbor list info ...
       pair build: copy
       stencil: none
       bin: none
-Per MPI rank memory allocation (min/avg/max) = 3.957 | 3.957 | 3.957 Mbytes
+Per MPI rank memory allocation (min/avg/max) = 3.956 | 3.956 | 3.957 Mbytes
    Step          Temp          PotEng         KinEng         TotEng         Press     
-         0   0.27280683    -6.0644806      0.40839345    -5.6560872      0.57517807   
-      1000   0.27406669    -6.0401603      0.41027948    -5.6298808      0.68877068   
-      2000   0.29611045    -6.0601602      0.44327911    -5.6168811      1.2419237    
-      3000   0.28016675    -6.0412001      0.41941131    -5.6217888      0.89214623   
-      4000   0.28737106    -6.0484608      0.4301962     -5.6182646      1.0121043    
-      5000   0.26964908    -6.0583712      0.40366629    -5.654705       0.56413481   
-      6000   0.28415512    -6.043406       0.42538191    -5.6180241      0.89781243   
-      7000   0.29156975    -6.0030563      0.43648167    -5.5665747      0.95114444   
-      8000   0.28301119    -6.0540267      0.42366945    -5.6303572      0.75141228   
-      9000   0.29095666    -6.0665864      0.43556386    -5.6310225      0.54445965   
-     10000   0.28636427    -6.0577232      0.42868902    -5.6290342      1.1312891    
-     11000   0.27422208    -6.046299       0.4105121     -5.6357869      0.95637412   
-     12000   0.28988836    -6.0710008      0.43396461    -5.6370362      1.0370144    
-     13000   0.27096625    -6.0421463      0.4056381     -5.6365082      1.09875      
-     14000   0.29817288    -6.0503915      0.44636658    -5.604025       0.75338867   
-     15000   0.28139666    -6.0420229      0.42125249    -5.6207704      0.84969983   
-     16000   0.2677674     -6.0560324      0.4008494     -5.655183       0.30384567   
-     17000   0.30504684    -6.0338643      0.45665694    -5.5772073      1.1650707    
-     18000   0.30056961    -6.0702745      0.44995451    -5.62032        0.48447049   
-     19000   0.28520105    -6.056479       0.42694768    -5.6295313      0.63413352   
-     20000   0.27955275    -6.0445985      0.41849214    -5.6261064      0.68489042   
-     21000   0.28394709    -6.0389016      0.4250705     -5.6138311      1.1693588    
-Loop time of 33.9908 on 8 procs for 21000 steps with 501 atoms
+         0   0.39025874    -5.7601828      0.58421967    -5.1759632      1.8233638    
+      1000   0.37223841    -5.6986352      0.55724313    -5.1413921      0.88560361   
+      2000   0.35920142    -5.7321104      0.53772667    -5.1943838      1.4000968    
+      3000   0.3887939     -5.7458145      0.58202679    -5.1637877      1.7570683    
+      4000   0.36154616    -5.7438513      0.54123677    -5.2026146      0.81011387   
+      5000   0.38802267    -5.7042445      0.58087226    -5.1233722      0.90865521   
+      6000   0.38913777    -5.7058545      0.58254157    -5.1233129      1.333463     
+      7000   0.36952984    -5.7726837      0.55318838    -5.2194953      1.4616657    
+      8000   0.38274976    -5.7828299      0.57297868    -5.2098512      1.0793401    
+      9000   0.40345227    -5.7607826      0.60397046    -5.1568121      1.4172393    
+     10000   0.38411434    -5.7411002      0.57502147    -5.1660787      1.1534556    
+     11000   0.39422286    -5.7451668      0.59015399    -5.1550128      1.1845561    
+     12000   0.38866454    -5.7539322      0.58183315    -5.172099       1.036881     
+     13000   0.38347789    -5.7815766      0.5740687     -5.2075079      0.72891492   
+     14000   0.38227266    -5.7633232      0.57226447    -5.1910587      0.84591369   
+     15000   0.37155264    -5.7202217      0.55621653    -5.1640052      1.1652255    
+     16000   0.40987071    -5.735434       0.6135789     -5.1218551      1.0027974    
+     17000   0.4026287     -5.8010354      0.60273757    -5.1982978      1.7676238    
+     18000   0.39013139    -5.7709699      0.58402903    -5.1869409      1.1059733    
+     19000   0.39216556    -5.74754        0.58707419    -5.1604658      1.1339739    
+     20000   0.41388688    -5.7671887      0.61959113    -5.1475976      1.8480478    
+     21000   0.39846447    -5.7913648      0.59650369    -5.1948611      0.9909906    
+     22000   0.374188      -5.7910465      0.56016167    -5.2308849      1.1373482    
+     23000   0.39605075    -5.7190007      0.59289034    -5.1261103      1.1098362    
+     24000   0.39921977    -5.7804274      0.59763439    -5.182793       0.8968519    
+     25000   0.38908076    -5.8262102      0.58245623    -5.243754       1.6732023    
+     26000   0.39254671    -5.7358235      0.58764478    -5.1481787      1.320506     
+     27000   0.39177772    -5.7700194      0.58649359    -5.1835258      1.0138386    
+     28000   0.3773406     -5.7589091      0.56488114    -5.1940279      1.4922282    
+     29000   0.39949546    -5.7450841      0.5980471     -5.147037       1.0078989    
+     30000   0.37116598    -5.76126        0.5556377     -5.2056223      0.80376513   
+     31000   0.37371599    -5.7619611      0.55945508    -5.202506       1.1243724    
+     32000   0.3826489     -5.765296       0.57282769    -5.1924683      1.4058894    
+     33000   0.39445416    -5.7012557      0.59050023    -5.1107555      0.67115956   
+     34000   0.40528359    -5.7072253      0.60671197    -5.1005133      1.3321665    
+     35000   0.38915265    -5.7165081      0.58256385    -5.1339443      0.72257608   
+     36000   0.38378974    -5.7551009      0.57453554    -5.1805653      1.081961     
+     37000   0.37482935    -5.7121753      0.56112178    -5.1510535      0.78012381   
+     38000   0.39048974    -5.7603187      0.58456548    -5.1757532      0.46397707   
+     39000   0.39882217    -5.7276297      0.59703918    -5.1305906      1.1477636    
+     40000   0.38774005    -5.7588651      0.58044918    -5.1784159      0.93233643   
+     41000   0.39315859    -5.7160058      0.58856077    -5.1274451      1.1078087    
+     42000   0.38197625    -5.7298192      0.57182074    -5.1579984      1.9224992    
+     43000   0.36453526    -5.6953445      0.54571147    -5.149633       1.1597092    
+     44000   0.38360878    -5.7609918      0.57426464    -5.1867271      1.0419729    
+     45000   0.39768822    -5.7151796      0.59534165    -5.1198379      1.2813186    
+     46000   0.39103021    -5.6876414      0.58537456    -5.1022668      1.4934728    
+     47000   0.37748164    -5.7591613      0.56509227    -5.194069       1.1822317    
+     48000   0.39882532    -5.7232612      0.5970439     -5.1262173      1.2052052    
+     49000   0.37303754    -5.7435152      0.55843943    -5.1850758      0.66194912   
+     50000   0.38333474    -5.7319149      0.5738544     -5.1580605      1.5246264    
+     51000   0.37391945    -5.7443796      0.55975966    -5.1846199      0.96131206   
+     52000   0.39494879    -5.7882851      0.59124071    -5.1970444      1.01298      
+     53000   0.39974075    -5.7295645      0.59841429    -5.1311502      1.3733425    
+     54000   0.37780307    -5.7575039      0.56557345    -5.1919304      1.6130028    
+     55000   0.4035969     -5.7542989      0.60418698    -5.1501119      1.7316844    
+     56000   0.40115801    -5.722206       0.60053595    -5.1216701      1.6800503    
+     57000   0.38129051    -5.74814        0.57079418    -5.1773458      0.7988012    
+     58000   0.40320747    -5.7000662      0.60360399    -5.0964622      1.2574427    
+     59000   0.3817052     -5.7196602      0.57141497    -5.1482452      1.0283935    
+     60000   0.389115      -5.7163941      0.58250749    -5.1338866      1.6127518    
+     61000   0.38918842    -5.7056986      0.58261739    -5.1230812      1.327337     
+     62000   0.39605694    -5.7755977      0.59289962    -5.1826981      0.84272754   
+     63000   0.40132597    -5.7230406      0.60078738    -5.1222533      1.4716535    
+     64000   0.39458917    -5.7333013      0.59070236    -5.1425989      0.70888486   
+     65000   0.36770902    -5.7023632      0.55046261    -5.1519006      0.87357195   
+     66000   0.4168668     -5.720236       0.6240521     -5.0961839      0.89190085   
+     67000   0.38045809    -5.7285863      0.56954803    -5.1590383      1.3645679    
+     68000   0.37853073    -5.6694913      0.56666276    -5.1028285      1.5235667    
+     69000   0.40971129    -5.7244603      0.61334025    -5.11112        1.6222512    
+     70000   0.39461923    -5.7198648      0.59074735    -5.1291174      0.95636762   
+     71000   0.40539396    -5.7379266      0.60687719    -5.1310494      1.0998957    
+     72000   0.42251593    -5.6878539      0.63250888    -5.055345       0.87597619   
+     73000   0.39003219    -5.7861305      0.58388052    -5.2022499      1.0932627    
+     74000   0.3814189     -5.7239686      0.57098638    -5.1529822      1.2684317    
+     75000   0.39324731    -5.7137266      0.58869357    -5.1250331      0.99703432   
+     76000   0.36305387    -5.7554689      0.54349382    -5.2119751      0.66133673   
+     77000   0.3746498     -5.7126613      0.56085299    -5.1518083      1.109946     
+     78000   0.40508387    -5.7170944      0.60641297    -5.1106814      1.2328558    
+     79000   0.38910619    -5.746102       0.5824943     -5.1636077      0.62063522   
+     80000   0.39454486    -5.7027533      0.59063602    -5.1121173      1.4073456    
+     81000   0.37544286    -5.7171585      0.56204022    -5.1551183      1.6358852    
+     82000   0.41326486    -5.7451916      0.61865997    -5.1265316      1.3927964    
+     83000   0.40055601    -5.7278824      0.59963475    -5.1282477      0.60521448   
+     84000   0.41019468    -5.7014453      0.61406389    -5.0873814      0.79809689   
+     85000   0.39254271    -5.7199032      0.58763879    -5.1322644      0.84332097   
+     86000   0.38038961    -5.7912488      0.56944552    -5.2218033      1.508165     
+     87000   0.40210099    -5.7327154      0.60194759    -5.1307678      0.85376445   
+     88000   0.39599211    -5.6986285      0.59280256    -5.105826       1.249347     
+     89000   0.39585663    -5.6841331      0.59259975    -5.0915333      1.1726884    
+     90000   0.36591523    -5.7995117      0.54777729    -5.2517344      1.2434217    
+     91000   0.40194557    -5.7540085      0.60171493    -5.1522935      1.2114968    
+     92000   0.4018898     -5.7309929      0.60163144    -5.1293615      1.3733268    
+     93000   0.39631008    -5.7157539      0.59327857    -5.1224754      1.0463204    
+     94000   0.38200368    -5.7661468      0.57186179    -5.194285       1.1493127    
+     95000   0.37799928    -5.7258807      0.56586719    -5.1600135      1.5428907    
+     96000   0.37224752    -5.7488141      0.55725677    -5.1915574      1.0285438    
+     97000   0.38801012    -5.7098653      0.58085348    -5.1290118      1.0027325    
+     98000   0.36733351    -5.7092049      0.54990046    -5.1593044      0.5897253    
+     99000   0.38448704    -5.7208119      0.5755794     -5.1452325      1.6283353    
+    100000   0.40357568    -5.730753       0.60415521    -5.1265978      0.80858553   
+    101000   0.40573393    -5.7722568      0.60738612    -5.1648707      1.0798937    
+Loop time of 169.652 on 8 procs for 101000 steps with 501 atoms
 
-Performance: 26689.540 tau/day, 617.813 timesteps/s, 309.525 katom-step/s
+Performance: 25718.534 tau/day, 595.336 timesteps/s, 298.264 katom-step/s
 95.8% CPU use with 8 MPI tasks x no OpenMP threads
 
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 1.8531     | 1.9777     | 2.1332     |   6.6 |  5.82
-Neigh   | 0.078224   | 0.083425   | 0.090098   |   1.3 |  0.25
-Comm    | 1.8097     | 1.9882     | 2.1123     |   7.2 |  5.85
-Output  | 0.00071744 | 0.00079213 | 0.00090087 |   0.0 |  0.00
-Modify  | 29.62      | 29.637     | 29.657     |   0.2 | 87.19
-Other   |            | 0.3042     |            |       |  0.89
+Pair    | 9.1694     | 9.7342     | 10.544     |  14.3 |  5.74
+Neigh   | 0.48128    | 0.49798    | 0.52051    |   2.2 |  0.29
+Comm    | 9.1413     | 9.9432     | 10.513     |  14.2 |  5.86
+Output  | 0.0034853  | 0.0039347  | 0.0045117  |   0.5 |  0.00
+Modify  | 147.77     | 147.81     | 147.87     |   0.3 | 87.13
+Other   |            | 1.66       |            |       |  0.98
 
-Nlocal:         62.625 ave          65 max          59 min
-Histogram: 1 1 0 1 0 1 0 0 1 3
-Nghost:        3112.62 ave        3132 max        3091 min
-Histogram: 1 0 1 1 1 1 1 0 1 1
-Neighs:        20070.4 ave       21857 max       18552 min
-Histogram: 1 1 0 2 1 0 1 1 0 1
+Nlocal:         62.625 ave          67 max          59 min
+Histogram: 2 2 0 0 0 1 0 0 1 2
+Nghost:         3083.5 ave        3097 max        3078 min
+Histogram: 3 2 1 0 0 0 0 1 0 1
+Neighs:          20084 ave       21566 max       18791 min
+Histogram: 2 1 0 0 1 1 0 2 0 1
 
-Total # of neighbors = 160563
-Ave neighs/atom = 320.48503
-Neighbor list builds = 170
+Total # of neighbors = 160672
+Ave neighs/atom = 320.70259
+Neighbor list builds = 996
 Dangerous builds = 0
 unfix thermalize
-Total wall time: 0:00:33
+Total wall time: 0:02:49

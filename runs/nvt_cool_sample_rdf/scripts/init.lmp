@@ -2,5 +2,5 @@ variable dt equal 0.0005
 variable num_atom_types      equal 2
 variable initial_num_atoms   equal 501
 variable initial_density     equal 1.655
-variable temperature equal   0.28
+variable temperature equal   0.39
 variable initial_pressure    equal 2.37*10^(-6)

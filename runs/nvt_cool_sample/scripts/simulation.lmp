@@ -3,13 +3,13 @@ read_dump ${global_data_path}/initial_states/nve_${initial_num_atoms}.dat 0 x y 
 #### ----- Changable
 variable T_damp           equal 0.02
 variable dt               equal 0.002
-variable final_T          equal 0.28
+variable final_T          equal 0.39
 variable cool_interval    equal 0.07142857
 variable tol_T            equal 0.00001
-variable num_cool_steps   equal 10
+variable num_cool_steps   equal 1000
 variable thermalize_steps equal 30000
 variable quench_steps     equal 10
-variable num_chains       equal 1
+variable num_chains       equal 7
 ####
 
 

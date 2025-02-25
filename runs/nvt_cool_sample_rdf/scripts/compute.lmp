@@ -36,9 +36,9 @@ variable velocity_dist_exp_avg_stride     equal 1 #${global_exp_avg_stride}
 variable velocity_dist_exp_avg_num        equal 1  #${global_exp_avg_num}
 
 variable rdf_calcp              equal 1
-variable rdf_exp_stride         equal 20000 # 420000
+variable rdf_exp_stride         equal ${rdf_steps} # 420000
 variable rdf_exp_avg_stride     equal 1
-variable rdf_exp_avg_num        equal 20000
+variable rdf_exp_avg_num        equal ${rdf_steps}
 variable rdf_bins               equal 1000
 variable rdf_cutoff_11          equal ${cut}
 variable rdf_cutoff_12          equal ${cut}

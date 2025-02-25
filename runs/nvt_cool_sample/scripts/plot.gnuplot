@@ -14,7 +14,7 @@ inp_file = sprintf("%s%s", data_path, "/temperature.dat")
    set xlabel "Simulation Steps"
    set ylabel "Temperature"
    set output out_file
-   plot inp_file using 1:2 skip 2 with lines title "Temperature"
+   plot inp_file every 1000 using 1:2 skip 2 with lines title "Temperature"
 
 inp_file = sprintf("%s%s", data_path, "/pressure.dat")
    out_file = sprintf("%s%s", plot_path, "/pressure.png")
@@ -22,7 +22,7 @@ inp_file = sprintf("%s%s", data_path, "/pressure.dat")
    set xlabel "Simulation Steps"
    set ylabel "Pressure"
    set output out_file
-   plot inp_file using 1:2 skip 2 with lines title "Pressure"
+   plot inp_file every 1000 using 1:2 skip 2 with lines title "Pressure"
 
 inp_file = sprintf("%s%s", data_path, "/momentum.dat")
    out_file = sprintf("%s%s", plot_path, "/momentum.png")
@@ -30,7 +30,7 @@ inp_file = sprintf("%s%s", data_path, "/momentum.dat")
    set xlabel "Simulation Steps"
    set ylabel "Momentum"
    set output out_file
-   plot inp_file using 1:2 skip 2 with lines title "Momentum"
+   plot inp_file every 1000 using 1:2 skip 2 with lines title "Momentum"
 
    ensemble_mass = 1200 * (0.67 * 0.57 + 0.33 * 1.0)
 
@@ -39,7 +39,7 @@ inp_file = sprintf("%s%s", data_path, "/momentum.dat")
    set xlabel "Simulation Steps"
    set ylabel "COM Velocity"
    set output out_file
-   plot inp_file using 1:($2/ensemble_mass) skip 2 with lines title "COM Velocity"
+   plot inp_file every 1000 using 1:($2/ensemble_mass) skip 2 with lines title "COM Velocity"
 
 inp_file = sprintf("%s%s", data_path, "/energy.dat")
    out_file = sprintf("%s%s", plot_path, "/energy.png")
@@ -47,9 +47,9 @@ inp_file = sprintf("%s%s", data_path, "/energy.dat")
    set xlabel "Simulation Steps"
    set ylabel "Energy"
    set output out_file
-   plot inp_file using 1:2 skip 2 with lines title "Kinetic Energy", \
-        inp_file using 1:3 skip 2 with lines title "Potential Energy", \
-        inp_file using 1:($2+$3) skip 2 with lines title "Total Energy"
+   plot inp_file every 1000 using 1:2 skip 2 with lines title "Kinetic Energy", \
+        inp_file every 1000 using 1:3 skip 2 with lines title "Potential Energy", \
+        inp_file every 1000 using 1:($2+$3) skip 2 with lines title "Total Energy"
 
 inp_file = sprintf("%s%s", data_path, "/energy.dat")
    out_file = sprintf("%s%s", plot_path, "/ke.png")
@@ -57,7 +57,7 @@ inp_file = sprintf("%s%s", data_path, "/energy.dat")
    set xlabel "Simulation Steps"
    set ylabel "Energy"
    set output out_file
-   plot inp_file using 1:2 skip 2 with lines title "Kinetic Energy"
+   plot inp_file every 1000 using 1:2 skip 2 with lines title "Kinetic Energy"
 
 inp_file = sprintf("%s%s", data_path, "/energy.dat")
    out_file = sprintf("%s%s", plot_path, "/pe.png")
@@ -65,7 +65,7 @@ inp_file = sprintf("%s%s", data_path, "/energy.dat")
    set xlabel "Simulation Steps"
    set ylabel "Energy"
    set output out_file
-       plot inp_file using 1:3 skip 2 with lines title "Potential Energy"
+       plot inp_file every 1000 using 1:3 skip 2 with lines title "Potential Energy"
 
 inp_file = sprintf("%s%s", data_path, "/energy.dat")
    out_file = sprintf("%s%s", plot_path, "/te.png")
@@ -73,7 +73,7 @@ inp_file = sprintf("%s%s", data_path, "/energy.dat")
    set xlabel "Simulation Steps"
    set ylabel "Energy"
    set output out_file
-       plot inp_file using 1:($2+$3) skip 2 with lines title "Total Energy"
+       plot inp_file every 1000 using 1:($2+$3) skip 2 with lines title "Total Energy"
 
 file1 = sprintf("%s%s", data_path, "/temperature.dat")
 file2 = sprintf("%s%s", data_path, "/energy.dat")
@@ -83,7 +83,7 @@ out_file = sprintf("%s%s", plot_path, "/TvsKE.png")
    set ylabel "KE"
    set output out_file
 skip      = 1000+2
-stride    = 30000
+stride    = 30000+10
 T_file    =  sprintf("%s%s", data_path, "/temperature.dat")
 KE_file   =  sprintf("%s%s", data_path, "/energy.dat")
 T_avg_file  =  sprintf("%s%s", data_path, "/Tavg.dat")

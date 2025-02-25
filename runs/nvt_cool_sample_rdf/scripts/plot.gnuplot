@@ -1,8 +1,11 @@
 set terminal pngcairo size 1024,768 enhanced font "Verdana,10"
 
-plot_path = ARG1
-data_path = ARG2
+plot_root_path = ARG1
+data_root_path = ARG2
 global_data_path = ARG3
+plot_path = sprintf("%s/%s", plot_root_path, ARG4)
+data_path = sprintf("%s/%s", data_root_path, ARG4)
+system(sprintf("mkdir -p %s", plot_path))
 
 inp_file = sprintf("%s%s", data_path, "/temperature.dat")
    out_file = sprintf("%s%s", plot_path, "/temperature.png")

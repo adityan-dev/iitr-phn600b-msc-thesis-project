@@ -32,25 +32,25 @@
         & & N_{O }= N_2 = 376
   \end{align*}
 ** Energy
-#+ATTR_ORG: :align center :width 1000px
+#+ATTR_ORG: :align center :width 800px
 [[../../runs/nve_lammps_pair_style/plots/energy.png]]
 
 ** Temperature and Velocity Distribution
-#+ATTR_ORG: :align center :width 1000px
+#+ATTR_ORG: :align center :width 800px
 [[../../runs/nve_lammps_pair_style/plots/temperature.png]]
 
-#+ATTR_ORG: :align center :width 1000px
+#+ATTR_ORG: :align center :width 800px
 [[../../runs/nve_lammps_pair_style/plots/velocity_dist.png]]
 
 ** Pressure
-#+ATTR_ORG: :align center :width 1000px
+#+ATTR_ORG: :align center :width 800px
 [[../../runs/nve_lammps_pair_style/plots/pressure.png]]
 
 ** Ensemble Momentum and COM Velocity
-#+ATTR_ORG: :align center :width 1000px
+#+ATTR_ORG: :align center :width 800px
 [[../../runs/nve_lammps_pair_style/plots/com_velocity.png]]
 
-#+ATTR_ORG: :align center :width 1000px
+#+ATTR_ORG: :align center :width 800px
 [[../../runs/nve_lammps_pair_style/plots/momentum.png]]
 
 * Cooling Checks
@@ -59,55 +59,61 @@
 - Thermalize (Nose-Hover) to \(T_f + 500K = T^*_f + 0.07\)
 - Cooling to \(T_f\) in steps. Each cooling step involves rapid cooling for \(n_c\), followed by thermalization (Nose-Hover) for \(n_t\)
 
-** \(T^*_f = 0.28, \quad N = 501\)
+\begin{align*}
+n_c = 10\Delta t \\
+n_t = 30000\Delta t \\
+N_{cool step} = 1000
+\end{align*}
+
+** \(T^*_f = 0.39, \quad N = 501\)
 *** Energy
-#+ATTR_ORG: :align center :width 1000px
-[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/ke.png]]
+#+ATTR_ORG: :align center :width 800px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.39/ke.png]]
 
-#+ATTR_ORG: :align center :width 1000px
-[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/pe.png]]
+#+ATTR_ORG: :align center :width 800px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.39/pe.png]]
 
-#+ATTR_ORG: :align center :width 1000px
-[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/te.png]]
+#+ATTR_ORG: :align center :width 800px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.39/te.png]]
 *** Temperature
-#+ATTR_ORG: :align center :width 1000px
-[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/temperature.png]]
+#+ATTR_ORG: :align center :width 800px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.39/temperature.png]]
 *** Pressure
-#+ATTR_ORG: :align center :width 1000px
-[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/pressure.png]]
+#+ATTR_ORG: :align center :width 800px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.39/pressure.png]]
 *** Average NVT Temperature vs KE
-#+ATTR_ORG: :align center :width 1000px
-[[../../runs/nvt_cool_sample/plots/N_501_T_0.28/TvsKE.png]]
+#+ATTR_ORG: :align center :width 800px
+[[../../runs/nvt_cool_sample/plots/N_501_T_0.39/TvsKE.png]]
 
 \begin{align*}
-KE = \alpha T ^ m, \quad m = 0.99, \quad \alpha = 749.99
+KE = \alpha T ^ m, \quad m = 1, \quad \alpha = 750
 \end{align*}
 * NVT Checks
-** Coslovich and Pastore RDF Check \(T^*_f = 0.28, \quad N = 501, \quad \rho = 1.655\)
+** Coslovich and Pastore RDF Check \(T^*_f = 0.39, \quad N = 501, \quad \rho = 1.655\)
 *** \(g_{11}(r)\)
-#+ATTR_ORG: :align center :width 1000px
-[[../../runs/nvt_cool_sample_rdf/plots/rdf_11.png]]
+#+ATTR_ORG: :align center :width 800px
+[[../../runs/nvt_cool_sample_rdf/plots/N_501_T_0.39/rdf_11.png]]
 
 *** \(g_{12}(r)\)
 
-#+ATTR_ORG: :align center :width 1000px
-[[../../runs/nvt_cool_sample_rdf/plots/rdf_12.png]]
+#+ATTR_ORG: :align center :width 800px
+[[../../runs/nvt_cool_sample_rdf/plots/N_501_T_0.39/rdf_12.png]]
 *** \(g_{22}(r)\)
 
-#+ATTR_ORG: :align center :width 1000px
-[[../../runs/nvt_cool_sample_rdf/plots/rdf_22.png]]
+#+ATTR_ORG: :align center :width 800px
+[[../../runs/nvt_cool_sample_rdf/plots/N_501_T_0.39/rdf_22.png]]
 
 *** Density Check
 **** \(N = 501, \quad \rho = 1.655\)
 
 \begin{align*}
-z_{}(R = 4.22113) = 522.054 \\
+z_{}(R = 4.22113) = 521.951 \\
 R_0 = 4.22113 \implies \frac{4}{3}\pi R_0^3 = 315.047 \\
 N_{sim} = 501, \quad \rho = 1.655 \\
 \implies L = 6.71449326567 \implies L^3 = 302.718 \\
 \end{align*}
 
 \begin{align*}
-\rho = \frac{N + 1}{L^3} = \frac{z(R_0)}{\frac{4}{3}\pi R_0^3} = 1.657 \\
+\rho = \frac{N + 1}{L^3} = \frac{z(R_0)}{\frac{4}{3}\pi R_0^3} = 1.6567 \\
 \implies N + 1 = 501.7 \implies N = 500.7 \approx 501
 \end{align*}
